@@ -1,0 +1,22 @@
+{
+  "name": "siddha-astro-mobile-redesign",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Siddha Astro mobile-first web app packaged for Android and iOS with Capacitor.",
+  "scripts": {
+    "sync": "npx cap sync",
+    "android": "npx cap open android",
+    "ios": "npx cap open ios",
+    "web": "npx http-server ."
+  },
+  "dependencies": {
+    "@capacitor/core": "^8.0.0",
+    "@capacitor/android": "^8.0.0",
+    "@capacitor/ios": "^8.0.0",
+    "@capacitor/share": "^8.0.0",
+    "@capacitor/preferences": "^8.0.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.0.0"
+  }
+}
