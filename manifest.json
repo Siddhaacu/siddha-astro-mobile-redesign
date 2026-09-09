@@ -1,0 +1,11 @@
+{
+  "name": "Siddha Astro",
+  "short_name": "Siddha Astro",
+  "description": "Panchangam, astrology and spiritual wisdom.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#fbf7ef",
+  "theme_color": "#741f2b",
+  "lang": "en-IN",
+  "icons": [{"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
+}
