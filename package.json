@@ -17,7 +17,8 @@
     "@capacitor/share": "^8.0.0",
     "@capacitor/preferences": "^8.0.0",
     "@netlify/blobs": "^11.0.3",
-    "panchang-ts": "5.2.1"
+    "panchang-ts": "5.2.1",
+    "web-push": "3.6.7"
   },
   "devDependencies": {
     "@capacitor/cli": "^8.0.0",
