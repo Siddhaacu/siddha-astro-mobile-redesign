@@ -1,5 +1,6 @@
 [build]
   publish = "."
+  command = "npm install && npm run build:web"
 
 [build.environment]
   NODE_VERSION = "22"
@@ -15,7 +16,7 @@
   [headers.values]
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
-    Permissions-Policy = "geolocation=(), microphone=()"
+    Permissions-Policy = "geolocation=(self), microphone=()"
 
 [[redirects]]
   from = "/rasi/*"
