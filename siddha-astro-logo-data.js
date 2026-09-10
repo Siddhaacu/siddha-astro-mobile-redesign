@@ -1,0 +1,1 @@
+window.SIDDHA_ASTRO_LOGO_DATA = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA...";
