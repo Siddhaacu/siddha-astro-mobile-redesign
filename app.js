@@ -37,9 +37,21 @@ window.enableSiddhaNotifications=async function(){
     const save=await fetch('/.netlify/functions/push-subscribe',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(subscription)});
     if(!save.ok)throw new Error('Subscription could not be saved');
     localStorage.setItem('siddha-push-enabled','1');
+    const prompt=document.getElementById('notificationPrompt');if(prompt)prompt.remove();
     toast('Daily Panchangam notifications enabled');
     return true;
   }catch(error){console.error(error);toast('Daily notifications need to be configured on the server');return false;}
 };
 function base64UrlToUint8Array(base64String){const padding='='.repeat((4-base64String.length%4)%4);const base64=(base64String+padding).replace(/-/g,'+').replace(/_/g,'/');const raw=atob(base64);return Uint8Array.from([...raw].map(c=>c.charCodeAt(0)));}
 document.addEventListener('click',event=>{const button=event.target.closest?.('[data-enable-notifications]');if(button){event.preventDefault();window.enableSiddhaNotifications();}});
+
+/* Add one unobtrusive notification prompt to the Home page. iPhone requires this to follow a user interaction. */
+(function(){
+  function buildPrompt(){
+    if(!document.getElementById('todayTitle')||document.getElementById('notificationPrompt')||localStorage.getItem('siddha-push-enabled')==='1')return;
+    const anchor=document.querySelector('.hero-card');if(!anchor)return;
+    const card=document.createElement('section');card.id='notificationPrompt';card.className='notification-card';card.innerHTML='<div class="notification-icon">🔔</div><div><strong>Daily Panchangam</strong><small>Get a morning notification when today’s Panchangam is ready.</small></div><button type="button" data-enable-notifications>Enable</button>';
+    anchor.parentNode.insertBefore(card,anchor);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',buildPrompt);else buildPrompt();
+})();
