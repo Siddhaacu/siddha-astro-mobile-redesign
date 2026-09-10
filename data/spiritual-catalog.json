@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "note": "Catalogue only. Full text should be added only from material Siddha Astro has rights to publish, public-domain sources, or original/licensed translations.",
+  "categories": [
+    {"id":"slokas","title":"Slokas","telugu":"శ్లోకాలు","items":["Ganapati Dhyana Sloka","Guru Sloka","Shanti Mantras","Surya Sloka","Vishnu Smarana","Shiva Panchakshara","Devi Navarna"]},
+    {"id":"stotras","title":"Stotras","telugu":"స్తోత్రాలు","items":["Ganesha Atharvashirsha","Aditya Hridayam","Vishnu Sahasranama","Lalita Sahasranama","Shiva Mahimna Stotram","Dakshinamurthy Stotram","Subrahmanya Bhujangam","Kanakadhara Stotram","Soundarya Lahari","Sivananda Lahari"]},
+    {"id":"mantras","title":"Mantras","telugu":"మంత్రాలు","items":["Gayatri Mantra","Maha Mrityunjaya Mantra","Ganapati Mantra","Navarna Mantra","Panchakshari Mantra","Ashtakshari Mantra","Dwadashakshari Mantra","Saraswati Mantra","Lakshmi Mantra","Subrahmanya Mantra"]},
+    {"id":"upanishads","title":"Upanishads","telugu":"ఉపనిషత్తులు","items":["Isha Upanishad","Kena Upanishad","Katha Upanishad","Prashna Upanishad","Mundaka Upanishad","Mandukya Upanishad","Taittiriya Upanishad","Aitareya Upanishad","Chandogya Upanishad","Brihadaranyaka Upanishad"]},
+    {"id":"gita","title":"Bhagavad Gita","telugu":"భగవద్గీత","items":["18 Chapters","Verse-by-verse reading","Telugu meaning","English meaning","Transliteration","Reading progress"]},
+    {"id":"vedic","title":"Vedic Library","telugu":"వేద గ్రంథాలయం","items":["Rigveda","Yajurveda","Samaveda","Atharvaveda","Vedanga resources","Selected Puranic literature"]},
+    {"id":"siddha","title":"Siddha Astro Collection","telugu":"సిద్ధ ఆస్ట్రో సేకరణ","items":["Existing Siddha spiritual books","Siddha Saraswatha material","Kanchi Kalpaka Vallari","Navavarana Archana","Original Siddha Astro publications"]}
+  ]
+}
