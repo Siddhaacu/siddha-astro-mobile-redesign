@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "generatedFor": "2026-09-10",
+  "status": "editorial-seed",
+  "disclaimer": "Astrological guidance for reflection and spiritual practice; not a guaranteed prediction.",
+  "rashis": [
+    {"id":"mesha","symbol":"♈","sanskrit":"Mesha","telugu":"మేష","english":"Aries","guidance":{"en":"Focus on one priority and complete it with patience. Avoid rushing important decisions.","te":"ఒక ముఖ్యమైన పనిపై దృష్టి పెట్టి, ఓర్పుతో పూర్తి చేయండి. ముఖ్యమైన నిర్ణయాల్లో తొందరపడకుండా ఉండండి."}},
+    {"id":"vrishabha","symbol":"♉","sanskrit":"Vrishabha","telugu":"వృషభ","english":"Taurus","guidance":{"en":"Steady progress is favored. Review practical matters before committing resources.","te":"స్థిరమైన పురోగతికి అనుకూలమైన రోజు. వనరులను వినియోగించే ముందు ఆచరణాత్మక విషయాలను పరిశీలించండి."}},
+    {"id":"mithuna","symbol":"♊","sanskrit":"Mithuna","telugu":"మిథున","english":"Gemini","guidance":{"en":"Communication can open useful opportunities. Keep conversations clear and purposeful.","te":"స్పష్టమైన సంభాషణలు మంచి అవకాశాలకు దారి తీస్తాయి. మాటలను స్పష్టంగా, ప్రయోజనకరంగా ఉంచండి."}},
+    {"id":"karkataka","symbol":"♋","sanskrit":"Karkataka","telugu":"కర్కాటక","english":"Cancer","guidance":{"en":"Give attention to family and emotional balance. A calm routine can improve productivity.","te":"కుటుంబం మరియు భావోద్వేగ సమతుల్యతపై శ్రద్ధ పెట్టండి. ప్రశాంతమైన దినచర్య పనితీరును మెరుగుపరుస్తుంది."}},
+    {"id":"simha","symbol":"♌","sanskrit":"Simha","telugu":"సింహ","english":"Leo","guidance":{"en":"Leadership is useful when combined with listening. Let results, rather than urgency, guide your choices.","te":"వినే స్వభావంతో కూడిన నాయకత్వం ప్రయోజనకరం. తొందర కంటే ఫలితాలను దృష్టిలో ఉంచుకుని నిర్ణయాలు తీసుకోండి."}},
+    {"id":"kanya","symbol":"♍","sanskrit":"Kanya","telugu":"కన్య","english":"Virgo","guidance":{"en":"Organize unfinished work and simplify your schedule. Small improvements can create momentum.","te":"పూర్తికాని పనులను క్రమబద్ధీకరించి, మీ సమయ పట్టికను సరళీకరించండి. చిన్న మెరుగుదలలు మంచి వేగాన్ని ఇస్తాయి."}},
+    {"id":"tula","symbol":"♎","sanskrit":"Tula","telugu":"తుల","english":"Libra","guidance":{"en":"Seek balance in commitments and relationships. Consider both sides before reaching an agreement.","te":"బాధ్యతలు మరియు సంబంధాల్లో సమతుల్యతను పాటించండి. ఒప్పందానికి ముందు రెండు వైపులనూ పరిశీలించండి."}},
+    {"id":"vrischika","symbol":"♏","sanskrit":"Vrischika","telugu":"వృశ్చిక","english":"Scorpio","guidance":{"en":"Use determination thoughtfully. Protect your energy by avoiding unnecessary arguments and distractions.","te":"దృఢ సంకల్పాన్ని వివేకంతో ఉపయోగించండి. అవసరం లేని వాదనలు, దృష్టి చెదరింపులను నివారించి మీ శక్తిని కాపాడుకోండి."}},
+    {"id":"dhanus","symbol":"♐","sanskrit":"Dhanus","telugu":"ధనుస్సు","english":"Sagittarius","guidance":{"en":"Learning and constructive planning are favored. Turn enthusiasm into one practical next step.","te":"నేర్చుకోవడం మరియు నిర్మాణాత్మక ప్రణాళికకు అనుకూలత ఉంది. ఉత్సాహాన్ని ఒక ఆచరణాత్మక తదుపరి అడుగుగా మార్చండి."}},
+    {"id":"makara","symbol":"♑","sanskrit":"Makara","telugu":"మకర","english":"Capricorn","guidance":{"en":"Discipline supports progress. Prioritize responsibilities without overlooking rest and personal balance.","te":"క్రమశిక్షణ పురోగతికి తోడ్పడుతుంది. విశ్రాంతి మరియు వ్యక్తిగత సమతుల్యతను నిర్లక్ష్యం చేయకుండా బాధ్యతలకు ప్రాధాన్యం ఇవ్వండి."}},
+    {"id":"kumbha","symbol":"♒","sanskrit":"Kumbha","telugu":"కుంభ","english":"Aquarius","guidance":{"en":"A fresh perspective can help with a recurring problem. Test new ideas carefully before committing.","te":"పునరావృతమయ్యే సమస్యకు కొత్త దృక్కోణం సహాయపడుతుంది. కొత్త ఆలోచనలను పూర్తిగా స్వీకరించే ముందు జాగ్రత్తగా పరీక్షించండి."}},
+    {"id":"meena","symbol":"♓","sanskrit":"Meena","telugu":"మీన","english":"Pisces","guidance":{"en":"Quiet reflection can improve clarity. Protect your time and choose supportive company.","te":"నిశ్శబ్దమైన ఆత్మపరిశీలన స్పష్టతను పెంచుతుంది. మీ సమయాన్ని కాపాడుకుని, సహాయకరమైన సాంగత్యాన్ని ఎంచుకోండి."}}
+  ]
+}
