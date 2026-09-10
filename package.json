@@ -4,7 +4,8 @@
   "private": true,
   "description": "Siddha Astro mobile-first web app packaged for Android and iOS with Capacitor.",
   "scripts": {
-    "sync": "npx cap sync",
+    "build:web": "esbuild panchang-engine-source.js --bundle --format=iife --platform=browser --target=es2020 --outfile=panchang-engine.js",
+    "sync": "npm run build:web && npx cap sync",
     "android": "npx cap open android",
     "ios": "npx cap open ios",
     "web": "npx http-server ."
@@ -15,9 +16,11 @@
     "@capacitor/ios": "^8.0.0",
     "@capacitor/share": "^8.0.0",
     "@capacitor/preferences": "^8.0.0",
-    "@netlify/blobs": "^11.0.3"
+    "@netlify/blobs": "^11.0.3",
+    "panchang-ts": "5.2.1"
   },
   "devDependencies": {
-    "@capacitor/cli": "^8.0.0"
+    "@capacitor/cli": "^8.0.0",
+    "esbuild": "0.28.2"
   }
 }
