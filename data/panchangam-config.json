@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "status": "calculation-engine-pending",
+  "defaultLocation": {"name":"Hyderabad","latitude":17.3850,"longitude":78.4867,"timezone":"Asia/Kolkata"},
+  "requiredFields": ["date","location","timezone","tithi","nakshatra","yoga","karana","sunrise","sunset","rahuKalam","yamagandam","abhijit","durmuhurtham"],
+  "personalFields": ["birthNakshatra","birthRasi"],
+  "accuracyRule": "Do not display calculated Panchangam values until a verified astronomical/Panchangam calculation source is connected."
+}
