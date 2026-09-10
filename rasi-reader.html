@@ -8,16 +8,33 @@
 <main class="page">
 <section class="welcome"><div><span class="eyebrow" id="rasiDate">TODAY</span><h1><span id="rasiName">Mesha</span> <span class="muted" id="rasiEnglish">Aries</span></h1><p>AI-assisted Vedic guidance for reflection and spiritual practice.</p></div></section>
 <div class="lang-switch" role="tablist"><button class="active" id="teBtn">తెలుగు</button><button id="enBtn">English</button></div>
-<section class="quote-card"><span class="quote-mark">✦</span><p id="guidance">Loading today's guidance…</p><small>AI-assisted • Daily edition</small></section>
+<section class="quote-card"><span class="quote-mark">✦</span><p id="guidance">Loading today's guidance…</p><small id="editionStatus">Daily edition</small></section>
 <section class="section"><div class="section-head"><h2 id="todayHeading">Today's guidance</h2></div><div class="content-card"><strong id="focusTitle">Focus</strong><p id="focusText">Use today's guidance as a reflective prompt, not a guaranteed prediction.</p></div></section>
-<section class="section"><div class="content-card"><strong>Spiritual practice</strong><p>Choose a short prayer, mantra or quiet reflection from the Siddha Astro Spiritual Library.</p><a class="primary-btn" href="spiritual-library.html">Open Spiritual Library →</a></div></section>
+<section class="section"><div class="content-card"><strong>Spiritual practice</strong><p id="spiritualText">Choose a short prayer, mantra or quiet reflection from the Siddha Astro Spiritual Library.</p><a class="primary-btn" href="spiritual-library.html">Open Spiritual Library →</a></div></section>
 <section class="section"><div class="content-card"><strong>About this prediction</strong><p>This daily content is AI-assisted and should be read as astrological/spiritual guidance. It is not a guarantee of future events or a substitute for professional advice.</p><button class="secondary-btn" id="reportBtn">🚩 Report this prediction</button></div></section>
 </main>
 <nav class="bottom-nav"><a href="index.html"><span>⌂</span><small>Home</small></a><a href="panchangam.html"><span>☀</span><small>Panchangam</small></a><a class="active" href="rasi-phalalu.html"><span>♈</span><small>Rasi</small></a><a href="spiritual-library.html"><span>ॐ</span><small>Spiritual</small></a><a href="more.html"><span>☰</span><small>More</small></a></nav>
 </div><div id="toast" class="toast"></div>
 <script>
-const params=new URLSearchParams(location.search); const id=params.get('rasi')||'mesha'; let lang=localStorage.getItem('siddha-language')||'telugu'; let current;
-async function load(){const r=await fetch('data/rasi-phalalu.json'); const data=await r.json(); current=data.rashis.find(x=>x.id===id)||data.rashis[0]; document.getElementById('rasiSymbol').textContent=current.symbol; document.getElementById('rasiName').textContent=lang==='telugu'?current.telugu:current.sanskrit; document.getElementById('rasiEnglish').textContent=current.english; document.getElementById('rasiDate').textContent=data.generatedFor; document.getElementById('guidance').textContent=current.guidance[lang==='telugu'?'te':'en']; document.getElementById('teBtn').classList.toggle('active',lang==='telugu'); document.getElementById('enBtn').classList.toggle('active',lang==='english')}
+const params=new URLSearchParams(location.search); const id=params.get('rasi')||'mesha'; let lang=localStorage.getItem('siddha-language')||'telugu'; let current; let fallbackData;
+async function getFallback(){if(fallbackData)return fallbackData;const r=await fetch('data/rasi-phalalu.json');fallbackData=await r.json();return fallbackData}
+async function load(){
+  const fallback=await getFallback(); current=fallback.rashis.find(x=>x.id===id)||fallback.rashis[0];
+  let daily=null;
+  try{const response=await fetch('/.netlify/functions/rasi-daily'); if(response.ok){const candidate=await response.json(); if(candidate.rashis) daily=candidate;}}catch(e){console.info('Using editorial fallback',e)}
+  const generated=daily?.rashis?.find(x=>x.id===id);
+  document.getElementById('rasiSymbol').textContent=current.symbol;
+  document.getElementById('rasiName').textContent=lang==='telugu'?current.telugu:current.sanskrit;
+  document.getElementById('rasiEnglish').textContent=current.english;
+  document.getElementById('rasiDate').textContent=daily?.generatedFor||fallback.generatedFor||'TODAY';
+  document.getElementById('guidance').textContent=generated?(lang==='telugu'?generated.summaryTe:generated.summaryEn):current.guidance[lang==='telugu'?'te':'en'];
+  document.getElementById('focusText').textContent=generated?(lang==='telugu'?generated.focusTe:generated.focusEn):'Use today\'s guidance as a reflective prompt, not a guaranteed prediction.';
+  document.getElementById('spiritualText').textContent=generated?(lang==='telugu'?generated.spiritualTe:generated.spiritualEn):'Choose a short prayer, mantra or quiet reflection from the Siddha Astro Spiritual Library.';
+  document.getElementById('editionStatus').textContent=daily?.status==='ai'?'AI-assisted • Daily edition':'Editorial seed • AI endpoint ready';
+  document.getElementById('teBtn').classList.toggle('active',lang==='telugu');document.getElementById('enBtn').classList.toggle('active',lang==='english');
+}
 function setLang(x){lang=x;localStorage.setItem('siddha-language',lang);load()}
-document.getElementById('teBtn').onclick=()=>setLang('telugu');document.getElementById('enBtn').onclick=()=>setLang('english');document.getElementById('reportBtn').onclick=()=>{localStorage.setItem('siddha-last-report',JSON.stringify({rasi:id,date:new Date().toISOString()}));document.getElementById('toast').textContent='Thank you. Your report has been recorded for review.';document.getElementById('toast').classList.add('show');setTimeout(()=>document.getElementById('toast').classList.remove('show'),2500)};load();
+document.getElementById('teBtn').onclick=()=>setLang('telugu');document.getElementById('enBtn').onclick=()=>setLang('english');
+document.getElementById('reportBtn').onclick=()=>{localStorage.setItem('siddha-last-report',JSON.stringify({rasi:id,date:new Date().toISOString()}));document.getElementById('toast').textContent='Thank you. Your report has been recorded for review.';document.getElementById('toast').classList.add('show');setTimeout(()=>document.getElementById('toast').classList.remove('show'),2500)};
+load();
 </script></body></html>
