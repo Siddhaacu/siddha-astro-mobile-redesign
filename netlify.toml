@@ -11,6 +11,9 @@
 [functions."rasi-refresh"]
   schedule = "@daily"
 
+[functions."panchang-notify"]
+  schedule = "30 1 * * *"
+
 [[headers]]
   for = "/*"
   [headers.values]
