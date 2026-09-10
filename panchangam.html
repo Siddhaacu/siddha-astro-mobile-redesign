@@ -1,11 +1,12 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#741f2b"><meta name="description" content="Daily Siddha Astro Panchangam with Nakshatra, Tarabalam and Chandrabalam."><link rel="manifest" href="manifest.json"><link rel="stylesheet" href="styles.css"><title>Panchangam — Siddha Astro</title></head>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#741f2b"><meta name="description" content="Daily Siddha Astro Panchangam with astronomical Panchanga, Nakshatra, Tarabalam and Chandrabalam."><link rel="manifest" href="manifest.json"><link rel="stylesheet" href="styles.css"><title>Panchangam — Siddha Astro</title></head>
 <body><div class="app-shell">
 <header class="topbar"><div class="brand-wrap"><div class="brand-mark">ॐ</div><div><div class="brand">Panchangam</div><div class="brand-sub">Daily celestial calendar</div></div></div><a class="icon-btn" href="index.html">⌂</a></header>
 <main class="page">
 <section class="welcome"><div><span class="eyebrow">DAILY PANCHANGAM</span><h1 id="panchTitle">Know the time</h1><p id="panchDate"></p></div><button class="location-pill" id="locationBtn">⌖ Hyderabad</button></section>
 <section class="content-card"><strong>Calculation profile</strong><p id="locationText">Hyderabad • Asia/Kolkata</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="secondary-btn" id="detectBtn">Use my location</button><input id="datePicker" type="date"></div><small class="muted">Astronomical Panchangam is calculated for the selected date and coordinates.</small></section>
 <div class="metric-grid" id="panchGrid"><div class="metric-card"><span class="metric-icon">☀</span><small>Tithi</small><strong id="todayTithi">Calculating…</strong><span class="muted">Daily lunar date</span></div><div class="metric-card"><span class="metric-icon">✦</span><small>Nakshatra</small><strong id="todayNakshatra">Calculating…</strong><span class="muted">Source for Tarabalam</span></div><div class="metric-card"><span class="metric-icon">◒</span><small>Moon Rashi</small><strong id="todayRashi">Calculating…</strong><span class="muted">Source for Chandrabalam</span></div><div class="metric-card"><span class="metric-icon">◑</span><small>Yoga / Karana</small><strong id="todayYogaKarana">Calculating…</strong><span class="muted">Daily Panchang</span></div></div>
+<section class="section"><div class="section-head"><h2>Day details</h2><span class="muted">Traditional calendar</span></div><div class="metric-grid"><div class="metric-card compact-metric"><small>Vara</small><strong id="todayVara">—</strong></div><div class="metric-card compact-metric"><small>Paksha</small><strong id="todayPaksha">—</strong></div><div class="metric-card compact-metric"><small>Masa</small><strong id="todayMasa">—</strong></div><div class="metric-card compact-metric"><small>Samvatsara</small><strong id="todaySamvatsara">—</strong></div></div></section>
 <section class="section"><div class="section-head"><h2>Auspicious timings</h2></div><div class="quick-grid"><div class="quick-card"><span>☀</span><div><strong>Sunrise / Sunset</strong><small id="sunTimes">Calculating…</small></div></div><div class="quick-card"><span>◐</span><div><strong>Rahu Kalam / Yamagandam</strong><small id="rahuTimes">Calculating…</small></div></div><div class="quick-card"><span>✦</span><div><strong>Abhijit / Durmuhurtham</strong><small id="muhurtaTimes">Calculating…</small></div></div></div></section>
 <section class="section" id="tarabalam"><div class="section-head"><h2>Tarabalam</h2><span class="muted">Birth Nakshatra</span></div><div class="content-card bala-card"><label for="birthNakshatra">Janma Nakshatra</label><select id="birthNakshatra"><option value="">Select your birth Nakshatra</option></select><div id="taraResult" class="tara-result"><strong>Select your Janma Nakshatra</strong><small>Your birth star is used to calculate today's Tarabalam.</small></div></div></section>
 <section class="section" id="chandrabalam"><div class="section-head"><h2>Chandrabalam</h2><span class="muted">Janma Rashi</span></div><div class="content-card bala-card"><label for="birthRashi">Your Janma Rashi</label><select id="birthRashi"><option value="">Select your Rashi</option></select><div id="chandraResult" class="tara-result"><strong>Select your Janma Rashi</strong><small>Today's Moon Rashi will be used automatically.</small></div></div></section>
@@ -14,33 +15,17 @@
 <nav class="bottom-nav"><a href="index.html"><span>⌂</span><small>Home</small></a><a class="active" href="panchangam.html"><span>☀</span><small>Panchangam</small></a><a href="rasi-phalalu.html"><span>♈</span><small>Rasi</small></a><a href="spiritual-library.html"><span>ॐ</span><small>Spiritual</small></a><a href="more.html"><span>☰</span><small>More</small></a></nav></div>
 <div id="toast" class="toast"></div>
 <script src="app.js"></script><script src="panchang-engine.js"></script><script src="panchang-bala.js"></script><script>
-const picker=document.getElementById('datePicker');
-const locationText=document.getElementById('locationText');
+const picker=document.getElementById('datePicker'),locationText=document.getElementById('locationText');
 function localISODate(d=new Date()){const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');return `${y}-${m}-${day}`}
 function updateDateLabel(value){const d=new Date(value+'T12:00:00');document.getElementById('panchDate').textContent=d.toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});}
 function renderPanchang(result){
-  document.getElementById('todayTithi').textContent=result.tithi?.display||'—';
-  document.getElementById('todayNakshatra').textContent=result.nakshatra?.english||'—';
-  document.getElementById('todayRashi').textContent=result.rashi?.english||'—';
-  document.getElementById('todayYogaKarana').textContent=`${result.yoga?.display||'—'} / ${result.karana?.display||'—'}`;
-  document.getElementById('sunTimes').textContent=`${result.sunrise||'—'} — ${result.sunset||'—'}`;
-  document.getElementById('rahuTimes').textContent=`Rahu: ${result.rahuKalam||'—'} • Yama: ${result.yamagandam||'—'}`;
-  document.getElementById('muhurtaTimes').textContent=`Abhijit: ${result.abhijit||'—'} • Durmuhurtham: ${result.durmuhurtham||'—'}`;
-  if(result.location) locationText.textContent=`${result.location.name||'Current location'} • ${result.location.timezone||'India'}`;
-  window.dispatchEvent(new CustomEvent('siddha:panchang-updated',{detail:result}));
+ document.getElementById('todayTithi').textContent=result.tithi?.display||'—';document.getElementById('todayNakshatra').textContent=result.nakshatra?.english||'—';document.getElementById('todayRashi').textContent=result.rashi?.english||'—';document.getElementById('todayYogaKarana').textContent=`${result.yoga?.display||'—'} / ${result.karana?.display||'—'}`;
+ document.getElementById('todayVara').textContent=result.vara?.display||'—';document.getElementById('todayPaksha').textContent=result.paksha?.display||'—';document.getElementById('todayMasa').textContent=result.masa?.display||'—';document.getElementById('todaySamvatsara').textContent=result.samvatsara?.display||'—';
+ document.getElementById('sunTimes').textContent=`${result.sunrise||'—'} — ${result.sunset||'—'}`;document.getElementById('rahuTimes').textContent=`Rahu: ${result.rahuKalam||'—'} • Yama: ${result.yamagandam||'—'}`;document.getElementById('muhurtaTimes').textContent=`Abhijit: ${result.abhijit||'—'} • Durmuhurtham: ${result.durmuhurtham||'—'}`;
+ if(result.location)locationText.textContent=`${result.location.name||'Current location'} • ${result.location.timezone||'India'}`;
+ window.dispatchEvent(new CustomEvent('siddha:panchang-updated',{detail:result}));
 }
-async function calculateSelected(){
-  const value=picker.value;
-  if(!value||!window.SiddhaPanchangEngine?.calculate)return;
-  updateDateLabel(value);
-  try{const result=await window.SiddhaPanchangEngine.calculate(value);renderPanchang(result);toast('Panchangam calculated from astronomical data');}
-  catch(err){console.error(err);toast('Panchangam calculation failed — please retry');}
-}
-picker.value=localISODate();
-updateDateLabel(picker.value);
-const stored=window.SiddhaPanchangEngine?.getStored?.();
-if(stored&&stored.date===picker.value)renderPanchang(stored); else calculateSelected();
-document.getElementById('detectBtn').onclick=()=>{if(!navigator.geolocation){toast('Location is not available in this browser');return}navigator.geolocation.getCurrentPosition(async p=>{localStorage.setItem('siddha-location',JSON.stringify({lat:p.coords.latitude,lon:p.coords.longitude}));toast('Location saved — recalculating Panchangam');await calculateSelected()},()=>toast('Location permission was not granted'))};
-document.getElementById('locationBtn').onclick=()=>document.getElementById('detectBtn').click();
-picker.addEventListener('change',calculateSelected);
+async function calculateSelected(){const value=picker.value;if(!value||!window.SiddhaPanchangEngine?.calculate)return;updateDateLabel(value);try{const result=await window.SiddhaPanchangEngine.calculate(value);renderPanchang(result);toast('Panchangam calculated from astronomical data')}catch(err){console.error(err);toast('Panchangam calculation failed — please retry')}}
+picker.value=localISODate();updateDateLabel(picker.value);const stored=window.SiddhaPanchangEngine?.getStored?.();if(stored&&stored.date===picker.value)renderPanchang(stored);else calculateSelected();
+document.getElementById('detectBtn').onclick=()=>{if(!navigator.geolocation){toast('Location is not available in this browser');return}navigator.geolocation.getCurrentPosition(async p=>{localStorage.setItem('siddha-location',JSON.stringify({lat:p.coords.latitude,lon:p.coords.longitude}));toast('Location saved — recalculating Panchangam');await calculateSelected()},()=>toast('Location permission was not granted'))};document.getElementById('locationBtn').onclick=()=>document.getElementById('detectBtn').click();picker.addEventListener('change',calculateSelected);
 </script></body></html>
