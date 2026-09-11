@@ -17,7 +17,7 @@ document.addEventListener('click',event=>{const button=event.target.closest?.('[
 
 /* Bilingual Vara formatter. Supports English, Sanskrit transliteration and Telugu source names. */
 (function(){
-  const VARA={Sunday:'ఆదివారం',Somavara:'సోమవారం',Somavara:'సోమవారం',Monday:'సోమవారం',Mangalavara:'మంగళవారం',Tuesday:'మంగళవారం',Budhavara:'బుధవారం',Wednesday:'బుధవారం',Guruvara:'గురువారం',Thursday:'గురువారం',Shukravara:'శుక్రవారం',Friday:'శుక్రవారం',Shanivara:'శనివారం',Saturday:'శనివారం'};
+  const VARA={Sunday:'ఆదివారం',Monday:'సోమవారం',Tuesday:'మంగళవారం, Wednesday:'బుధవారం',Thursday:'గురువారం',Friday:'శుక్రవారం',Saturday:'శనివారం'};
   function formatVara(value){if(!value)return '—';if(typeof value==='object'&&value.english)return `${value.english} / ${value.telugu||''}`.replace(/ \/ $/,'');const raw=String(value).trim();const key=raw.replace(/[\s-]/g,'').toLowerCase();const found=Object.keys(VARA).find(k=>k.replace(/[\s-]/g,'').toLowerCase()===key);if(found){const english=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'].includes(found)?found:raw;return `${english} / ${VARA[found]}`;}return raw.includes('/')?raw:`${raw} / ${VARA[raw]||''}`.replace(/ \/ $/,'');}
   function apply(){const el=document.getElementById('todayVara');if(!el)return;const text=el.textContent.trim();if(text&&text!=='—')el.textContent=formatVara(text);}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply);else apply();
