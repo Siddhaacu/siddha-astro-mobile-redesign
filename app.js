@@ -15,12 +15,34 @@ function base64UrlToUint8Array(base64String){const padding='='.repeat((4-base64S
 document.addEventListener('click',event=>{const button=event.target.closest?.('[data-enable-notifications]');if(button){event.preventDefault();window.enableSiddhaNotifications();}});
 (function(){function buildPrompt(){if(!document.getElementById('todayTitle')||document.getElementById('notificationPrompt')||localStorage.getItem('siddha-push-enabled')==='1')return;const anchor=document.querySelector('.hero-card');if(!anchor)return;const card=document.createElement('section');card.id='notificationPrompt';card.className='notification-card';card.innerHTML='<div class="notification-icon">🔔</div><div><strong>Daily Panchangam</strong><small>Get a morning notification when today’s Panchangam is ready.</small></div><button type="button" data-enable-notifications>Enable</button>';anchor.parentNode.insertBefore(card,anchor);}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',buildPrompt);else buildPrompt();})();
 
-/* Bilingual Vara formatter. Supports English, Sanskrit transliteration and Telugu source names. */
+/* Fresh bilingual Vara code: English + Telugu. */
 (function(){
-  const VARA={Sunday:'ఆదివారం',Monday:'సోమవారం',Tuesday:'మంగళవారం, Wednesday:'బుధవారం',Thursday:'గురువారం',Friday:'శుక్రవారం',Saturday:'శనివారం'};
-  function formatVara(value){if(!value)return '—';if(typeof value==='object'&&value.english)return `${value.english} / ${value.telugu||''}`.replace(/ \/ $/,'');const raw=String(value).trim();const key=raw.replace(/[\s-]/g,'').toLowerCase();const found=Object.keys(VARA).find(k=>k.replace(/[\s-]/g,'').toLowerCase()===key);if(found){const english=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'].includes(found)?found:raw;return `${english} / ${VARA[found]}`;}return raw.includes('/')?raw:`${raw} / ${VARA[raw]||''}`.replace(/ \/ $/,'');}
-  function apply(){const el=document.getElementById('todayVara');if(!el)return;const text=el.textContent.trim();if(text&&text!=='—')el.textContent=formatVara(text);}
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply);else apply();
-  const start=()=>{const el=document.getElementById('todayVara');if(!el)return;new MutationObserver(apply).observe(el,{childList:true,characterData:true,subtree:true});};
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
+  const VARA_BY_DAY=['Sunday / ఆదివారం','Monday / సోమవారం','Tuesday / మంగళవారం','Wednesday / బుధవారం','Thursday / గురువారం','Friday / శుక్రవారం','Saturday / శనివారం'];
+  const VARA_ALIASES={sun:0,sunday:0 रविवासर:0,ravivara:0,mon:1,monday:1,somavara:1,somavar:1,tue:2,tuesday:2,mangalavara:2,wed:3,wednesday:3,budhavara:3,thu:4,thursday:4,guruvara:4,fri:5,friday:5,shukravara:5,sat:6,saturday:6,shanivara:6};
+  function clean(value){return String(value??'').trim().toLowerCase().replace(/[\s._-]/g,'');}
+  function freshVara(value){
+    if(value&&typeof value==='object'&&value.english)return `${value.english} / ${value.telugu||''}`.replace(/ \/ $/,'');
+    const raw=String(value??'').trim();
+    if(!raw)return VARA_BY_DAY[new Date().getDay()];
+    if(raw.includes('/'))return raw;
+    const key=clean(raw);
+    if(Object.prototype.hasOwnProperty.call(VARA_ALIASES,key))return VARA_BY_DAY[VARA_ALIASES[key]];
+    const telugu=VARA_BY_DAY.find(item=>item.endsWith(raw));
+    return telugu||raw;
+  }
+  function render(){
+    const el=document.getElementById('todayVara');
+    if(!el)return;
+    const current=el.dataset.rawVara||el.textContent.trim();
+    if(current&&!current.includes('/'))el.textContent=freshVara(current);
+  }
+  function init(){
+    render();
+    const el=document.getElementById('todayVara');
+    if(el&&!el.dataset.varaObserver){
+      el.dataset.varaObserver='true';
+      new MutationObserver(()=>{if(!el.textContent.includes('/'))render();}).observe(el,{childList:true,characterData:true,subtree:true});
+    }
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
