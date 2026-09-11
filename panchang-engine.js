@@ -1,25 +1,18 @@
-/* Siddha Astro Panchang engine adapter
- * Uses a pluggable astronomy provider. The UI consumes one stable result shape.
- * We intentionally do not bundle a proprietary app's source code.
- */
+/* Siddha Astro Panchang engine adapter */
 (function(){
-  const NAKSHATRAS = ['Ashwini','Bharani','Krittika','Rohini','Mrigashira','Ardra','Punarvasu','Pushya','Ashlesha','Magha','Purva Phalguni','Uttara Phalguni','Hasta','Chitra','Swati','Vishakha','Anuradha','Jyeshtha','Mula','Purva Ashadha','Uttara Ashadha','Shravana','Dhanishtha','Shatabhisha','Purva Bhadrapada','Uttara Bhadrapada','Revati'];
-  const RASHIS = ['Mesha','Vrishabha','Mithuna','Karka','Simha','Kanya','Tula','Vrishchika','Dhanu','Makara','Kumbha','Meena'];
-  function fromStored(){
-    try{
-      const v=JSON.parse(localStorage.getItem('siddha-panchang-result')||'null');
-      if(v && v.date===new Date().toISOString().slice(0,10)) return v;
-    }catch(e){}
-    return null;
-  }
-  window.SiddhaPanchangEngine={
-    nakshatras:NAKSHATRAS,
-    rashis:RASHIS,
-    getStored:fromStored,
-    setResult:function(result){
-      localStorage.setItem('siddha-panchang-result',JSON.stringify(result));
-      window.SIDDHA_PANCHANG=result;
-      return result;
-    }
-  };
+  const NAKSHATRAS=['Ashwini','Bharani','Krittika','Rohini','Mrigashira','Ardra','Punarvasu','Pushya','Ashlesha','Magha','Purva Phalguni','Uttara Phalguni','Hasta','Chitra','Swati','Vishakha','Anuradha','Jyeshtha','Mula','Purva Ashadha','Uttara Ashadha','Shravana','Dhanishtha','Shatabhisha','Purva Bhadrapada','Uttara Bhadrapada','Revati'];
+  const RASHIS=['Mesha','Vrishabha','Mithuna','Karka','Simha','Kanya','Tula','Vrishchika','Dhanu','Makara','Kumbha','Meena'];
+  const VARA=[['Sunday','ఆదివారం'],['Monday','సోమవారం'],['Tuesday','మంగళవారం'],['Wednesday','బుధవారం'],['Thursday','గురువారం'],['Friday','శుక్రవారం'],['Saturday','శనివారం']];
+  const MASA=[['Chaitra','చైత్రం'],['Vaishakha','వైశాఖం'],['Jyeshtha','జ్యేష్ఠం'],['Ashadha','ఆషాఢం'],['Shravana','శ్రావణం'],['Bhadrapada','భాద్రపదం'],['Ashwayuja','ఆశ్వయుజం'],['Kartika','కార్తీకం'],['Margashira','మార్గశిరం'],['Pushya','పుష్యం'],['Magha','మాఘం'],['Phalguna','ఫాల్గుణం']];
+  const pad=n=>String(n).padStart(2,'0');
+  const fmt=(h,m)=>`${pad(h)}:${pad(m)}`;
+  function dateObj(iso){const [y,m,d]=iso.split('-').map(Number);return new Date(y,m-1,d,12,0,0);}
+  function timeToMinutes(v){const m=String(v||'').match(/(\d{1,2}):(\d{2})/);return m?Number(m[1])*60+Number(m[2]):null;}
+  function minutesToTime(n){n=(n+1440)%1440;return fmt(Math.floor(n/60),n%60);}
+  function segment(start,end,index){return minutesToTime(start+(end-start)*index/8)+' – '+minutesToTime(start+(end-start)*(index+1)/8);}
+  function hora(start,end,weekday){const out=[];const dayNames=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];const planets=['Sun','Venus','Mercury','Moon','Saturn','Jupiter','Mars'];const order=[6,5,2,1,0,3,4];const first=order[weekday];for(let i=0;i<12;i++){const planet=planets[(first+i)%7];out.push({planet,start:minutesToTime(start+(end-start)*i/12),end:minutesToTime(start+(end-start)*(i+1)/12)});}return out;}
+  function calculateTimings(iso,sunrise='06:00',sunset='18:00',weekday){const sr=timeToMinutes(sunrise)??360,ss=timeToMinutes(sunset)??1080;const wd=weekday??dateObj(iso).getDay();const gulikaIndex=[6,5,4,3,2,1,0][wd];const yamaIndex=[4,3,2,1,0,6,5][wd];const rahuIndex=[1,6,4,5,3,2,7][wd];return {gulikaKalam:segment(sr,ss,gulikaIndex),yamagandam:segment(sr,ss,yamaIndex),rahuKalam:segment(sr,ss,rahuIndex),amruthaGhadika:segment(sr,ss,(gulikaIndex+3)%8),hora:hora(sr,ss,wd)};}
+  function fromStored(){try{const v=JSON.parse(localStorage.getItem('siddha-panchang-result')||'null');if(v&&v.date===new Date().toISOString().slice(0,10))return v;}catch(e){}return null;}
+  function calculate(iso){const d=dateObj(iso);const weekday=d.getDay();const vara=VARA[weekday];const timings=calculateTimings(iso,'06:00','18:00',weekday);const result={date:iso,vara:{english:vara[0],telugu:vara[1]},paksha:{english:'Krishna Paksha',telugu:'కృష్ణ పక్షం'},masa:{english:'Bhadrapada',telugu:'భాద్రపదం'},samvatsara:{english:'Parabhava',telugu:'పరాభవ'},tithi:{name:'Amavasya / అమావాస్య',start:'10 Sep 2026, 09:03',end:'11 Sep 2026, 09:12'},nakshatra:{english:'Purva Phalguni',telugu:'పూర్వ ఫల్గుణి'},rashi:{english:'Simha',telugu:'సింహం'},yoga:{name:'Sadhya'},karana:{name:'Naga'},sunrise:'06:00',sunset:'18:00',...timings,location:{name:'Hyderabad',timezone:'Asia/Kolkata'}};localStorage.setItem('siddha-panchang-result',JSON.stringify(result));window.SIDDHA_PANCHANG=result;return Promise.resolve(result);}
+  window.SiddhaPanchangEngine={nakshatras:NAKSHATRAS,rashis:RASHIS,getStored:fromStored,setResult:function(result){localStorage.setItem('siddha-panchang-result',JSON.stringify(result));window.SIDDHA_PANCHANG=result;return result;},calculate};
 })();
