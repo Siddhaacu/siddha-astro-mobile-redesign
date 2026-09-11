@@ -1,7 +1,7 @@
-const CACHE='siddha-astro-v1';
-const APP_SHELL=['/','/index.html','/panchangam.html','/rasi-phalalu.html','/spiritual-library.html','/more.html','/styles.css','/app.js','/manifest.json','/icon.svg'];
+const CACHE='siddha-astro-v2';
+const APP_SHELL=['/','/index.html','/panchangam.html','/rasi-phalalu.html','/spiritual-library.html','/more.html','/styles.css','/app.js','/panchang-engine.js','/manifest.json','/icon.svg'];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(APP_SHELL)).then(()=>self.skipWaiting()));});
-self.addEventListener('activate',event=>{event.waitUntil(self.clients.claim());});
+self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim()));});
 self.addEventListener('fetch',event=>{if(event.request.method!=='GET'||!event.request.url.startsWith(self.location.origin))return;event.respondWith(caches.match(event.request).then(cached=>cached||fetch(event.request).then(response=>{if(response.ok){const copy=response.clone();caches.open(CACHE).then(cache=>cache.put(event.request,copy));}return response;}).catch(()=>cached)));});
 self.addEventListener('push',event=>{let data={title:'Siddha Astro',body:'Today’s Panchangam is ready.',url:'/panchangam.html'};try{if(event.data)data={...data,...event.data.json()};}catch(_){if(event.data)data.body=event.data.text();}event.waitUntil(self.registration.showNotification(data.title,{body:data.body,icon:'/icon.svg',badge:'/icon.svg',tag:'siddha-panchangam',renotify:false,data:{url:data.url}}));});
 self.addEventListener('notificationclick',event=>{event.notification.close();const url=event.notification.data?.url||'/panchangam.html';event.waitUntil(clients.matchAll({type:'window',includeUncontrolled:true}).then(list=>{for(const client of list){if('focus' in client){client.navigate(url);return client.focus();}}return clients.openWindow(url);}));});
