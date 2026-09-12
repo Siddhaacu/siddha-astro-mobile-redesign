@@ -1,7 +1,7 @@
-const API_BASE = 'https://api.tathaastuapi.com/v1/panchang';
+const API_BASE = 'https://telugupanchangam.app/api/panchangam';
 
 async function fetchDay(date, lat, lng, signal) {
-  const upstream = `${API_BASE}?date=${encodeURIComponent(date)}&lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lng)}&tz=Asia%2FKolkata&region=SOUTH_INDIA`;
+  const upstream = `${API_BASE}?date=${encodeURIComponent(date)}&lat=${encodeURIComponent(lat)}&lng=${encodeURIComponent(lng)}`;
   const response = await fetch(upstream, {
     headers: { accept: 'application/json' },
     signal
@@ -33,14 +33,12 @@ function mergeBoundaryTimes(current, prior) {
     ...source,
     tithi: {
       ...tithi,
-      startsAt: tithi.startsAt || tithi.startAt || tithi.start ||
-        priorTithi.endsAt || priorTithi.endAt || priorTithi.end || null,
+      startsAt: tithi.startsAt || tithi.startAt || tithi.start || priorTithi.endsAt || priorTithi.endAt || priorTithi.end || null,
       endsAt: tithi.endsAt || tithi.endAt || tithi.end || null
     },
     nakshatra: {
       ...nakshatra,
-      startsAt: nakshatra.startsAt || nakshatra.startAt || nakshatra.start ||
-        priorNakshatra.endsAt || priorNakshatra.endAt || priorNakshatra.end || null,
+      startsAt: nakshatra.startsAt || nakshatra.startAt || nakshatra.start || priorNakshatra.endsAt || priorNakshatra.endAt || priorNakshatra.end || null,
       endsAt: nakshatra.endsAt || nakshatra.endAt || nakshatra.end || null
     }
   };
@@ -71,12 +69,10 @@ export default async (request) => {
 
     const current = currentResult.value;
     const prior = priorResult.status === 'fulfilled' ? priorResult.value : null;
-    const merged = mergeBoundaryTimes(current, prior);
-
-    return Response.json(merged, {
+    return Response.json(mergeBoundaryTimes(current, prior), {
       headers: {
-        'cache-control': 'public, max-age=300',
-        'x-panchang-provider': 'tathaastuapi.com'
+        'cache-control': 'no-store',
+        'x-panchang-provider': 'telugupanchangam.app'
       }
     });
   } catch (error) {
