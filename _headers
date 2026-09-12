@@ -1,0 +1,14 @@
+/*
+  cache-control: public, max-age=0, must-revalidate
+
+/*.html
+  cache-control: public, max-age=0, must-revalidate
+
+/*.js
+  cache-control: public, max-age=0, must-revalidate
+
+/*.css
+  cache-control: public, max-age=0, must-revalidate
+
+/service-worker.js
+  cache-control: public, max-age=0, must-revalidate
