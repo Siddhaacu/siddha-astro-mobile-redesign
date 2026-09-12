@@ -3,58 +3,22 @@
   const NAKSHATRAS=['Ashwini','Bharani','Krittika','Rohini','Mrigashira','Ardra','Punarvasu','Pushya','Ashlesha','Magha','Purva Phalguni','Uttara Phalguni','Hasta','Chitra','Swati','Vishakha','Anuradha','Jyeshtha','Mula','Purva Ashadha','Uttara Ashadha','Shravana','Dhanishtha','Shatabhisha','Purva Bhadrapada','Uttara Bhadrapada','Revati'];
   const RASHIS=['Mesha','Vrishabha','Mithuna','Karka','Simha','Kanya','Tula','Vrishchika','Dhanu','Makara','Kumbha','Meena'];
   const VARA=[['Sunday','ఆదివారం'],['Monday','సోమవారం'],['Tuesday','మంగళవారం'],['Wednesday','బుధవారం'],['Thursday','గురువారం'],['Friday','శుక్రవారం'],['Saturday','శనివారం']];
+  const TARA_NAMES=[['Janma','జన్మ'],['Sampat','సంపత్'],['Vipat','విపత్'],['Kshema','క్షేమ'],['Pratyari','ప్రత్యరి'],['Sadhaka','సాధక'],['Vadha','వధ'],['Mitra','మిత్ర'],['Ati-Mitra','అతి మిత్ర']];
+  const TARA_GOOD=[2,4,6,8,9];
+  const CHANDRA_GOOD=[1,3,6,7,10,11];
   const pad=n=>String(n).padStart(2,'0');
   const fmt=(h,m)=>`${pad(h)}:${pad(m)}`;
   function dateObj(iso){const [y,m,d]=iso.split('-').map(Number);return new Date(y,m-1,d,12,0,0);}
   function timeToMinutes(v){const m=String(v||'').match(/(\d{1,2}):(\d{2})/);return m?Number(m[1])*60+Number(m[2]):null;}
   function minutesToTime(n){n=(n+1440)%1440;return fmt(Math.floor(n/60),n%60);}
   function segment(start,end,index,count=8){const size=(end-start)/count;return minutesToTime(start+size*index)+' – '+minutesToTime(start+size*(index+1));}
-
-  // Traditional Hora sequence: Sun, Venus, Mercury, Moon, Saturn, Jupiter, Mars.
-  // The first Hora lord is the weekday lord. Sunday=Sun, Monday=Moon, etc.
   const PLANETS=['Sun','Venus','Mercury','Moon','Saturn','Jupiter','Mars'];
   const WEEKDAY_LORD_INDEX=[0,3,6,2,5,1,4];
-  function buildHoras(dayStart,dayEnd,nightStart,nextSunrise,weekday){
-    const result=[];
-    const first=WEEKDAY_LORD_INDEX[weekday];
-    const dayHora=(dayEnd-dayStart)/12;
-    const nightHora=(nextSunrise-nightStart)/12;
-    for(let i=0;i<12;i++){
-      result.push({period:'Day',index:i+1,planet:PLANETS[(first+i)%7],start:minutesToTime(dayStart+dayHora*i),end:minutesToTime(dayStart+dayHora*(i+1))});
-    }
-    for(let i=0;i<12;i++){
-      result.push({period:'Night',index:i+13,planet:PLANETS[(first+12+i)%7],start:minutesToTime(nightStart+nightHora*i),end:minutesToTime(nightStart+nightHora*(i+1))});
-    }
-    return result;
-  }
-
-  function calculateTimings(iso,sunrise='06:00',sunset='18:00',weekday){
-    const sr=timeToMinutes(sunrise)??360;
-    const ss=timeToMinutes(sunset)??1080;
-    const wd=weekday??dateObj(iso).getDay();
-    const nextSunrise=sr+1440;
-    const gulikaIndex=[6,5,4,3,2,1,0][wd];
-    const yamaIndex=[4,3,2,1,0,6,5][wd];
-    const rahuIndex=[1,6,4,5,3,2,7][wd];
-    return {
-      gulikaKalam:segment(sr,ss,gulikaIndex),
-      yamagandam:segment(sr,ss,yamaIndex),
-      rahuKalam:segment(sr,ss,rahuIndex),
-      amruthaGhadika:segment(sr,ss,(gulikaIndex+3)%8),
-      hora:buildHoras(sr,ss,ss,nextSunrise,wd)
-    };
-  }
-
+  function buildHoras(dayStart,dayEnd,nightStart,nextSunrise,weekday){const result=[];const first=WEEKDAY_LORD_INDEX[weekday];const dayHora=(dayEnd-dayStart)/12;const nightHora=(nextSunrise-nightStart)/12;for(let i=0;i<12;i++)result.push({period:'Day',index:i+1,planet:PLANETS[(first+i)%7],start:minutesToTime(dayStart+dayHora*i),end:minutesToTime(dayStart+dayHora*(i+1))});for(let i=0;i<12;i++)result.push({period:'Night',index:i+13,planet:PLANETS[(first+12+i)%7],start:minutesToTime(nightStart+nightHora*i),end:minutesToTime(nightStart+nightHora*(i+1))});return result;}
+  function calculateTimings(iso,sunrise='06:00',sunset='18:00',weekday){const sr=timeToMinutes(sunrise)??360;const ss=timeToMinutes(sunset)??1080;const wd=weekday??dateObj(iso).getDay();const nextSunrise=sr+1440;const gulikaIndex=[6,5,4,3,2,1,0][wd];const yamaIndex=[4,3,2,1,0,6,5][wd];const rahuIndex=[1,6,4,5,3,2,7][wd];return{gulikaKalam:segment(sr,ss,gulikaIndex),yamagandam:segment(sr,ss,yamaIndex),rahuKalam:segment(sr,ss,rahuIndex),amruthaGhadika:segment(sr,ss,(gulikaIndex+3)%8),hora:buildHoras(sr,ss,ss,nextSunrise,wd)};}
+  function taraBala(birthNakshatra,dayNakshatra){const b=NAKSHATRAS.indexOf(birthNakshatra),d=NAKSHATRAS.indexOf(dayNakshatra);if(b<0||d<0)return null;const number=((d-b+27)%27)%9+1;const name=TARA_NAMES[number-1];return{number,name:name[0],telugu:name[1],favourable:TARA_GOOD.includes(number),verdict:TARA_GOOD.includes(number)?'Favourable / శుభం':number===1?'Mixed / మిశ్రమం':'Unfavourable / అశుభం'};}
+  function chandraBala(birthRashi,dayRashi){const b=RASHIS.indexOf(birthRashi),d=RASHIS.indexOf(dayRashi);if(b<0||d<0)return null;const house=((d-b+12)%12)+1;return{house,favourable:CHANDRA_GOOD.includes(house),verdict:CHANDRA_GOOD.includes(house)?'Favourable / శుభం': 'Unfavourable / అశుభం'};}
   function fromStored(){try{const v=JSON.parse(localStorage.getItem('siddha-panchang-result')||'null');if(v&&v.date===new Date().toISOString().slice(0,10))return v;}catch(e){}return null;}
-  function calculate(iso){
-    const d=dateObj(iso);
-    const weekday=d.getDay();
-    const vara=VARA[weekday];
-    const timings=calculateTimings(iso,'06:00','18:00',weekday);
-    const result={date:iso,vara:{english:vara[0],telugu:vara[1]},paksha:{english:'Krishna Paksha',telugu:'కృష్ణ పక్షం'},masa:{english:'Bhadrapada',telugu:'భాద్రపదం'},samvatsara:{english:'Parabhava',telugu:'పరాభవ'},tithi:{name:'Amavasya / అమావాస్య',start:'10 Sep 2026, 09:03',end:'11 Sep 2026, 09:12'},nakshatra:{english:'Purva Phalguni',telugu:'పూర్వ ఫల్గుణి'},rashi:{english:'Simha',telugu:'సింహం'},yoga:{name:'Sadhya'},karana:{name:'Naga'},sunrise:'06:00',sunset:'18:00',...timings,location:{name:'Hyderabad',timezone:'Asia/Kolkata'}};
-    localStorage.setItem('siddha-panchang-result',JSON.stringify(result));
-    window.SIDDHA_PANCHANG=result;
-    return Promise.resolve(result);
-  }
-  window.SiddhaPanchangEngine={nakshatras:NAKSHATRAS,rashis:RASHIS,getStored:fromStored,setResult:function(result){localStorage.setItem('siddha-panchang-result',JSON.stringify(result));window.SIDDHA_PANCHANG=result;return result;},calculate};
+  function calculate(iso){const d=dateObj(iso);const weekday=d.getDay();const vara=VARA[weekday];const timings=calculateTimings(iso,'06:00','18:00',weekday);const dayNakshatra='Purva Phalguni',dayRashi='Simha';const birthNakshatra=localStorage.getItem('siddha-birth-nakshatra')||'Anuradha';const birthRashi=localStorage.getItem('siddha-birth-rashi')||'Vrishchika';const result={date:iso,vara:{english:vara[0],telugu:vara[1]},paksha:{english:'Krishna Paksha',telugu:'కృష్ణ పక్షం'},masa:{english:'Bhadrapada',telugu:'భాద్రపదం'},samvatsara:{english:'Parabhava',telugu:'పరాభవ'},tithi:{name:'Amavasya / అమావాస్య',start:'10 Sep 2026, 09:03',end:'11 Sep 2026, 09:12'},nakshatra:{english:dayNakshatra,telugu:'పూర్వ ఫల్గుణి'},rashi:{english:dayRashi,telugu:'సింహం'},yoga:{name:'Sadhya'},karana:{name:'Naga'},sunrise:'06:00',sunset:'18:00',...timings,tarabala:taraBala(birthNakshatra,dayNakshatra),chandrabala:chandraBala(birthRashi,dayRashi),birthProfile:{nakshatra:birthNakshatra,rashi:birthRashi},location:{name:'Hyderabad',timezone:'Asia/Kolkata'}};localStorage.setItem('siddha-panchang-result',JSON.stringify(result));window.SIDDHA_PANCHANG=result;return Promise.resolve(result);}
+  window.SiddhaPanchangEngine={nakshatras:NAKSHATRAS,rashis:RASHIS,getStored:fromStored,setResult:function(result){localStorage.setItem('siddha-panchang-result',JSON.stringify(result));window.SIDDHA_PANCHANG=result;return result;},calculate,taraBala,chandraBala};
 })();
