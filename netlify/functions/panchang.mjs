@@ -1,7 +1,7 @@
-const API_BASE = 'https://telugupanchangam.app/api/panchangam';
+const API_BASE = 'https://api.tathaastuapi.com/v1/panchang';
 
 async function fetchDay(date, lat, lng, signal) {
-  const upstream = `${API_BASE}?date=${encodeURIComponent(date)}&lat=${encodeURIComponent(lat)}&lng=${encodeURIComponent(lng)}&tz=Asia%2FKolkata`;
+  const upstream = `${API_BASE}?date=${encodeURIComponent(date)}&lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lng)}&tz=Asia%2FKolkata&region=SOUTH_INDIA`;
   const response = await fetch(upstream, {
     headers: { accept: 'application/json' },
     signal
@@ -76,7 +76,7 @@ export default async (request) => {
     return Response.json(merged, {
       headers: {
         'cache-control': 'public, max-age=300',
-        'x-panchang-provider': 'telugupanchangam.app'
+        'x-panchang-provider': 'tathaastuapi.com'
       }
     });
   } catch (error) {
