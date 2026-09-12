@@ -16,3 +16,4 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 })();
 if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));
 window.enableSiddhaNotifications=async()=>false;
+(function(){function moveMuhurta(){const grid=document.querySelector('.quick-grid');if(!grid)return;const cards=[...grid.children];const hora=cards.find(el=>el.querySelector('#horaMorning'));const muhurta=cards.find(el=>el.querySelector('#muhurtaTimes'));if(hora&&muhurta&&hora.previousElementSibling!==muhurta)grid.insertBefore(muhurta,hora)}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',moveMuhurta,{once:true});else moveMuhurta()})();
