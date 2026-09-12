@@ -4,7 +4,7 @@
   "private": true,
   "description": "Siddha Astro mobile-first web app packaged for Android and iOS with Capacitor.",
   "scripts": {
-    "build:web": "esbuild panchang-engine-source.js --bundle --format=iife --platform=browser --target=es2020 --outfile=panchang-engine.js",
+    "build:web": "mkdir -p www && esbuild panchang-engine-source.js --bundle --format=iife --platform=browser --target=es2020 --outfile=www/panchang-engine.js && find . -maxdepth 1 -type f \\( -name '*.html' -o -name '*.css' -o -name '*.js' -o -name '*.json' \\) ! -name 'package.json' ! -name 'package-lock.json' ! -name 'panchang-engine-source.js' ! -name 'panchang-engine.js' -exec cp {} www/ \\; && cp panchang-engine.js www/panchang-engine.js",
     "sync": "npm run build:web && npx cap sync",
     "android": "npx cap open android",
     "ios": "npx cap open ios",
