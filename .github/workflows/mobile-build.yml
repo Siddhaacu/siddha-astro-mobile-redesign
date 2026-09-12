@@ -19,10 +19,12 @@ jobs:
         run: npm install
       - name: Build web bundle
         run: npm run build:web
+      - name: Verify Capacitor config
+        run: node -e "const c=require('./capacitor.config.json'); if(!c.appId) throw new Error('Missing appId'); console.log(c)"
       - name: Add Android platform
-        run: npx cap add android
+        run: npx cap add android --config capacitor.config.json
       - name: Sync Capacitor
-        run: npx cap sync android
+        run: npx cap sync android --config capacitor.config.json
       - name: Set Android SDK 36
         uses: android-actions/setup-android@v3
       - name: Install Android 36 SDK
@@ -49,10 +51,12 @@ jobs:
         run: npm install
       - name: Build web bundle
         run: npm run build:web
+      - name: Verify Capacitor config
+        run: node -e "const c=require('./capacitor.config.json'); if(!c.appId) throw new Error('Missing appId'); console.log(c)"
       - name: Add iOS platform
-        run: npx cap add ios
+        run: npx cap add ios --config capacitor.config.json
       - name: Sync Capacitor
-        run: npx cap sync ios
+        run: npx cap sync ios --config capacitor.config.json
       - name: Archive iOS project
         working-directory: ios
         run: xcodebuild -workspace App/App.xcworkspace -scheme App -configuration Release -sdk iphoneos -archivePath $PWD/build/SiddhaAstro.xcarchive archive CODE_SIGNING_ALLOWED=NO
