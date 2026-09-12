@@ -1,7 +1,7 @@
 {
   "appId": "in.siddhaastro.app",
   "appName": "Siddha Astro",
-  "webDir": ".",
+  "webDir": "www",
   "server": {
     "androidScheme": "https"
   }
