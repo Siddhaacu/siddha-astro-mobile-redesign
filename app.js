@@ -13,36 +13,15 @@ if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serv
 window.enableSiddhaNotifications=async function(){toast('Notifications are not configured yet');return false};
 function base64UrlToUint8Array(value){const padding='='.repeat((4-value.length%4)%4);const raw=atob((value+padding).replace(/-/g,'+').replace(/_/g,'/'));return Uint8Array.from([...raw].map(c=>c.charCodeAt(0)))}
 
-/* Panchangam layout enhancements. */
+/* Display Panchangam Tithi, Nakshatra and Rashi in English + Telugu. */
 (function(){
-  function findText(text){return [...document.querySelectorAll('body *')].find(el=>el.children.length===0&&el.textContent.trim().toLowerCase().includes(text.toLowerCase()));}
-  function addShareButton(){
-    if(document.getElementById('sharePanchangam'))return;
-    const location=findText('Hyderabad');
-    if(!location)return;
-    const button=document.createElement('button');
-    button.id='sharePanchangam';
-    button.type='button';
-    button.className='secondary-btn';
-    button.textContent='↗ Share Panchangam / పంచాంగం షేర్ చేయండి';
-    button.style.cssText='display:block;width:100%;margin:10px 0;padding:12px 16px;cursor:pointer;';
-    button.addEventListener('click',async()=>{
-      const text=document.querySelector('main')?.innerText||document.body.innerText||'Siddha Astro Panchangam';
-      try{
-        if(navigator.share){await navigator.share({title:'Siddha Astro Panchangam',text});}
-        else if(navigator.clipboard){await navigator.clipboard.writeText(text);toast('Panchangam copied. You can share it now.');}
-        else toast('Sharing is not supported on this browser');
-      }catch(error){if(error.name!=='AbortError')toast('Unable to share Panchangam');}
-    });
-    location.parentElement.insertAdjacentElement('afterend',button);
-  }
-  function moveMuhurthamAboveHora(){
-    const cards=[...document.querySelectorAll('.quick-grid > *, .quick-grid .card, .quick-grid section')];
-    if(!cards.length)return;
-    const hora=cards.find(el=>/hora/i.test(el.textContent));
-    const muhurtham=cards.find(el=>/abhijit|durmuhurtham|durmuhurtam/i.test(el.textContent)&&el!==hora);
-    if(hora&&muhurtham&&hora.parentElement===muhurtham.parentElement)hora.parentElement.insertBefore(muhurtham,hora);
-  }
-  function init(){addShareButton();moveMuhurthamAboveHora();}
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
+  const TELUGU={
+    Pratipada:'పాడ్యమి',Dwitiya:'విదియ',Tritiya:'తదియ',Chaturthi:'చవితి',Panchami:'పంచమి',Shashthi:'షష్టి',Saptami:'సప్తమి',Ashtami:'అష్టమి',Navami:'నవమి',Dashami:'దశమి',Ekadashi:'ఏకాదశి',Dwadashi:'ద్వాదశి',Trayodashi:'త్రయోదశి',Chaturdashi:'చతుర్దశి',Purnima:'పౌర్ణమి',Amavasya:'అమావాస్య',
+    Ashwini:'అశ్విని',Bharani:'భరణి',Krittika:'కృత్తిక',Rohini:'రోహిణి',Mrigashira:'మృగశిర',Ardra:'ఆర్ద్ర',Punarvasu:'పునర్వసు',Pushya:'పుష్యమి',Ashlesha:'ఆశ్లేష',Magha:'మఘ','Purva Phalguni':'పుబ్బ','Uttara Phalguni':'ఉత్తర ఫల్గుణి',Hasta:'హస్త',Chitra:'చిత్త',Swati:'స్వాతి',Vishakha:'విశాఖ',Anuradha:'అనూరాధ',Jyeshtha:'జ్యేష్ఠ',Mula:'మూల','Purva Ashadha':'పూర్వాషాఢ','Uttara Ashadha':'ఉత్తరాషాఢ',Shravana:'శ్రవణ',Dhanishta:'ధనిష్ఠ',Shatabhisha:'శతభిషం','Purva Bhadrapada':'పూర్వాభాద్ర','Uttara Bhadrapada':'ఉత్తరాభాద్ర',Revati:'రేవతి',
+    Mesha:'మేషం',Vrishabha:'వృషభం',Mithuna:'మిథునం',Karkataka:'కర్కాటకం',Simha:'సింహం',Kanya:'కన్య',Tula:'తుల',Vrishchika:'వృశ్చికం',Dhanus:'ధనుస్సు',Makara:'మకరం',Kumbha:'కుంభం',Meena:'మీనం'
+  };
+  function bilingual(value){const raw=String(value||'—').trim();if(!raw||raw==='—'||raw.includes('/'))return raw||'—';const key=raw.replace(/\s*\/.*$/,'').trim();return TELUGU[key]?key+' / '+TELUGU[key]:raw;}
+  function apply(){['todayTithi','todayNakshatra','todayRashi'].forEach(id=>{const el=document.getElementById(id);if(!el)return;const raw=el.dataset.originalValue||el.textContent.trim();if(!el.dataset.originalValue)el.dataset.originalValue=raw;el.textContent=bilingual(raw);});}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});else apply();
+  window.addEventListener('load',()=>{apply();setTimeout(apply,800);setTimeout(apply,1800);});
 })();
