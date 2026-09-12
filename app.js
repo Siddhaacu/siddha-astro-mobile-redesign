@@ -15,34 +15,17 @@ function base64UrlToUint8Array(base64String){const padding='='.repeat((4-base64S
 document.addEventListener('click',event=>{const button=event.target.closest?.('[data-enable-notifications]');if(button){event.preventDefault();window.enableSiddhaNotifications();}});
 (function(){function buildPrompt(){if(!document.getElementById('todayTitle')||document.getElementById('notificationPrompt')||localStorage.getItem('siddha-push-enabled')==='1')return;const anchor=document.querySelector('.hero-card');if(!anchor)return;const card=document.createElement('section');card.id='notificationPrompt';card.className='notification-card';card.innerHTML='<div class="notification-icon">🔔</div><div><strong>Daily Panchangam</strong><small>Get a morning notification when today’s Panchangam is ready.</small></div><button type="button" data-enable-notifications>Enable</button>';anchor.parentNode.insertBefore(card,anchor);}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',buildPrompt);else buildPrompt();})();
 
-/* Fresh bilingual Vara code: English + Telugu. */
+/* Panchangam enhancements: bilingual names, share button, and timing order. */
 (function(){
-  const VARA_BY_DAY=['Sunday / ఆదివారం','Monday / సోమవారం','Tuesday / మంగళవారం','Wednesday / బుధవారం','Thursday / గురువారం','Friday / శుక్రవారం','Saturday / శనివారం'];
-  const VARA_ALIASES={sun:0,sunday:0 रविवासर:0,ravivara:0,mon:1,monday:1,somavara:1,somavar:1,tue:2,tuesday:2,mangalavara:2,wed:3,wednesday:3,budhavara:3,thu:4,thursday:4,guruvara:4,fri:5,friday:5,shukravara:5,sat:6,saturday:6,shanivara:6};
-  function clean(value){return String(value??'').trim().toLowerCase().replace(/[\s._-]/g,'');}
-  function freshVara(value){
-    if(value&&typeof value==='object'&&value.english)return `${value.english} / ${value.telugu||''}`.replace(/ \/ $/,'');
-    const raw=String(value??'').trim();
-    if(!raw)return VARA_BY_DAY[new Date().getDay()];
-    if(raw.includes('/'))return raw;
-    const key=clean(raw);
-    if(Object.prototype.hasOwnProperty.call(VARA_ALIASES,key))return VARA_BY_DAY[VARA_ALIASES[key]];
-    const telugu=VARA_BY_DAY.find(item=>item.endsWith(raw));
-    return telugu||raw;
-  }
-  function render(){
-    const el=document.getElementById('todayVara');
-    if(!el)return;
-    const current=el.dataset.rawVara||el.textContent.trim();
-    if(current&&!current.includes('/'))el.textContent=freshVara(current);
-  }
-  function init(){
-    render();
-    const el=document.getElementById('todayVara');
-    if(el&&!el.dataset.varaObserver){
-      el.dataset.varaObserver='true';
-      new MutationObserver(()=>{if(!el.textContent.includes('/'))render();}).observe(el,{childList:true,characterData:true,subtree:true});
-    }
-  }
+  const TELUGU={
+    'Pratipada':'పాడ్యమి','Dwitiya':'విదియ','Tritiya':'తదియ','Chaturthi':'చవితి','Panchami':'పంచమి','Shashthi':'షష్టి','Saptami':'సప్తమి','Ashtami':'అష్టమి','Navami':'నవమి','Dashami':'దశమి','Ekadashi':'ఏకాదశి','Dwadashi':'ద్వాదశి','Trayodashi':'త్రయోదశి','Chaturdashi':'చతుర్దశి','Purnima':'పౌర్ణమి','Amavasya':'అమావాస్య',
+    Ashwini:'అశ్విని',Bharani:'భరణి',Krittika:'కృత్తిక',Rohini:'రోహిణి',Mrigashira:'మృగశిర',Ardra:'ఆర్ద్ర',Punarvasu:'పునర్వసు',Pushya:'పుష్యమి',Ashlesha:'ఆశ్లేష',Magha:'మఘ', 'Purva Phalguni':'పుబ్బ','Uttara Phalguni':'ఉత్తర ఫల్గుణి',Hasta:'హస్త',Chitra:'చిత్త',Swati:'స్వాతి',Vishakha:'విశాఖ',Anuradha:'అనూరాధ',Jyeshtha:'జ్యేష్ఠ',Mula:'మూల','Purva Ashadha':'పూర్వాషాఢ','Uttara Ashadha':'ఉత్తరాషాఢ',Shravana:'శ్రవణ',Dhanishta:'ధనిష్ఠ',Shatabhisha:'శతభిషం','Purva Bhadrapada':'పూర్వాభాద్ర','Uttara Bhadrapada':'ఉత్తరాభాద్ర',Revati:'రేవతి',
+    Mesha:'మేషం',Vrishabha:'వృషభం',Mithuna:'మిథునం',Karkataka:'కర్కాటకం',Simha:'సింహం',Kanya:'కన్య',Tula:'తుల',Vrishchika:'వృశ్చికం',Dhanus:'ధనుస్సు',Makara:'మకరం',Kumbha:'కుంభం',Meena:'మీనం'
+  };
+  function bilingual(value){const raw=String(value||'—').trim();if(!raw||raw==='—'||raw.includes('/'))return raw||'—';const key=raw.replace(/\s*\/.*$/,'').trim();return TELUGU[key]?`${key} / ${TELUGU[key]}`:raw;}
+  function addShare(){if(!document.getElementById('locationText')||document.getElementById('sharePanchangam'))return;const b=document.createElement('button');b.id='sharePanchangam';b.className='secondary-btn';b.type='button';b.textContent='↗ Share Panchangam / పంచాంగం షేర్ చేయండి';b.style.marginTop='8px';b.onclick=async()=>{const text=document.querySelector('.page')?.innerText||'Siddha Astro Panchangam';try{if(navigator.share)await navigator.share({title:'Siddha Astro Panchangam',text});else{await navigator.clipboard.writeText(text);toast('Panchangam copied. You can share it now.');}}catch(e){if(e.name!=='AbortError')toast('Unable to share Panchangam');}};document.getElementById('locationText').parentElement.appendChild(b);}
+  function reorder(){const grid=document.querySelector('.quick-grid');if(!grid)return;const hora=grid.querySelector('.hora-card');const muhurta=[...grid.children].find(el=>el.querySelector('#muhurtaTimes'));if(hora&&muhurta&&hora!==muhurta)grid.insertBefore(muhurta,hora);}
+  function init(){addShare();reorder();const t=document.getElementById('todayTithi'),n=document.getElementById('todayNakshatra'),r=document.getElementById('todayRashi');[t,n,r].forEach(el=>{if(el&&!el.dataset.bilingual){el.dataset.bilingual='1';el.textContent=bilingual(el.textContent);}});}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
+  new MutationObserver(init).observe(document.body,{childList:true,subtree:true});
 })();
