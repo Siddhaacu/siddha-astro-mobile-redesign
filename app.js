@@ -12,3 +12,37 @@ if(localStorage.getItem('siddha-theme')==='dark')document.body.classList.add('da
 if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));
 window.enableSiddhaNotifications=async function(){toast('Notifications are not configured yet');return false};
 function base64UrlToUint8Array(value){const padding='='.repeat((4-value.length%4)%4);const raw=atob((value+padding).replace(/-/g,'+').replace(/_/g,'/'));return Uint8Array.from([...raw].map(c=>c.charCodeAt(0)))}
+
+/* Panchangam layout enhancements. */
+(function(){
+  function findText(text){return [...document.querySelectorAll('body *')].find(el=>el.children.length===0&&el.textContent.trim().toLowerCase().includes(text.toLowerCase()));}
+  function addShareButton(){
+    if(document.getElementById('sharePanchangam'))return;
+    const location=findText('Hyderabad');
+    if(!location)return;
+    const button=document.createElement('button');
+    button.id='sharePanchangam';
+    button.type='button';
+    button.className='secondary-btn';
+    button.textContent='↗ Share Panchangam / పంచాంగం షేర్ చేయండి';
+    button.style.cssText='display:block;width:100%;margin:10px 0;padding:12px 16px;cursor:pointer;';
+    button.addEventListener('click',async()=>{
+      const text=document.querySelector('main')?.innerText||document.body.innerText||'Siddha Astro Panchangam';
+      try{
+        if(navigator.share){await navigator.share({title:'Siddha Astro Panchangam',text});}
+        else if(navigator.clipboard){await navigator.clipboard.writeText(text);toast('Panchangam copied. You can share it now.');}
+        else toast('Sharing is not supported on this browser');
+      }catch(error){if(error.name!=='AbortError')toast('Unable to share Panchangam');}
+    });
+    location.parentElement.insertAdjacentElement('afterend',button);
+  }
+  function moveMuhurthamAboveHora(){
+    const cards=[...document.querySelectorAll('.quick-grid > *, .quick-grid .card, .quick-grid section')];
+    if(!cards.length)return;
+    const hora=cards.find(el=>/hora/i.test(el.textContent));
+    const muhurtham=cards.find(el=>/abhijit|durmuhurtham|durmuhurtam/i.test(el.textContent)&&el!==hora);
+    if(hora&&muhurtham&&hora.parentElement===muhurtham.parentElement)hora.parentElement.insertBefore(muhurtham,hora);
+  }
+  function init(){addShareButton();moveMuhurthamAboveHora();}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
+})();
