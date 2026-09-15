@@ -11,7 +11,6 @@ const title=appById('todayTitle');if(title){const h=d.getHours();title.textConte
 const TELUGU={Pratipada:'పాడ్యమి',Dwitiya:'విదియ',Tritiya:'తదియ',Chaturthi:'చవితి',Panchami:'పంచమి',Shashthi:'షష్టి',Saptami:'సప్తమి',Ashtami:'అష్టమి',Navami:'నవమి',Dashami:'దశమి',Ekadashi:'ఏకాదశి',Dwadashi:'ద్వాదశి',Trayodashi:'త్రయోదశి',Chaturdashi:'చతుర్దశి',Purnima:'పౌర్ణమి',Amavasya:'అమావాస్య',Ashwini:'అశ్విని',Bharani:'భరణి',Krittika:'కృత్తిక',Rohini:'రోహిణి',Mrigashira:'మృగశిర',Ardra:'ఆర్ద్ర',Punarvasu:'పునర్వసు',Pushya:'పుష్యమి',Ashlesha:'ఆశ్లేష',Magha:'మఘ','Purva Phalguni':'పుబ్బ','Uttara Phalguni':'ఉత్తర ఫల్గుణి',Hasta:'హస్త',Chitra:'చిత్త',Swati:'స్వాతి',Vishakha:'విశాఖ',Anuradha:'అనూరాధ',Jyeshtha:'జ్యేష్ఠ',Mula:'మూల','Purva Ashadha':'పూర్వాషాఢ','Uttara Ashadha':'ఉత్తరాషాఢ',Shravana:'శ్రవణం',Dhanishta:'ధనిష్ఠ',Shatabhisha:'శతభిషం','Purva Bhadrapada':'పూర్వాభాద్ర','Uttara Bhadrapada':'ఉత్తరాభాద్ర',Revati:'రేవతి',Mesha:'మేషం',Vrishabha:'వృషభం',Mithuna:'మిథునం',Karkataka:'కర్కాటకం',Simha:'సింహం',Kanya:'కన్య',Tula:'తుల',Vrishchika:'వృశ్చికం',Dhanus:'ధనుస్సు',Makara:'మకరం',Kumbha:'కుంభం',Meena:'మీనం'};
 const isUnavailable=v=>/^(unavailable|data unavailable|not available|unknown|—)$/i.test(String(v||'').trim());
 function bi(v){const raw=String(v||'—').trim();if(!raw||raw==='—'||raw.includes('/')||isUnavailable(raw))return raw||'—';return TELUGU[raw]?raw+' / '+TELUGU[raw]:raw}
-const RASHI_BY_NAKSHATRA={Ashwini:'Mesha',Bharani:'Mesha',Krittika:'Mesha',Rohini:'Vrishabha',Mrigashira:'Mithuna',Ardra:'Mithuna',Punarvasu:'Mithuna',Pushya:'Karkataka',Ashlesha:'Karkataka',Magha:'Simha','Purva Phalguni':'Simha','Uttara Phalguni':'Kanya',Hasta:'Kanya',Chitra:'Tula',Swati:'Tula',Vishakha:'Tula',Anuradha:'Vrishchika',Jyeshtha:'Vrishchika',Mula:'Dhanus','Purva Ashadha':'Dhanus','Uttara Ashadha':'Dhanus',Shravana:'Makara',Dhanishta:'Makara',Shatabhisha:'Kumbha','Purva Bhadrapada':'Kumbha','Uttara Bhadrapada':'Meena',Revati:'Meena'};
 function applyNames(){
   [['todayTithi',false],['todayNakshatra',false]].forEach(([id])=>{const el=appById(id);if(!el)return;const raw=el.dataset.originalValue||el.textContent.trim();if(raw==='Calculating…'||raw==='Calculating...')return;if(!el.dataset.originalValue)el.dataset.originalValue=raw;el.textContent=bi(raw)});
   const rashi=appById('todayRashi');
@@ -19,12 +18,6 @@ function applyNames(){
     const raw=rashi.dataset.originalValue||rashi.textContent.trim();
     if(raw!=='Calculating…'&&raw!=='Calculating...'){
       if(!rashi.dataset.originalValue)rashi.dataset.originalValue=raw;
-      if(isUnavailable(raw)){
-        const nakshatra=appById('todayNakshatra');
-        const nakshatraRaw=nakshatra?.dataset.originalValue||nakshatra?.textContent.trim()||'';
-        const fallback=RASHI_BY_NAKSHATRA[nakshatraRaw.replace(/\s*\/.*$/,'').trim()];
-        if(fallback){rashi.textContent=fallback;return}
-      }
       rashi.textContent=raw;
     }
   }
@@ -49,29 +42,7 @@ window.enableSiddhaNotifications=async()=>false;
     '2026-09-11':['Amavasya / అమావాస్య'],
     '2026-09-12':['Chandra Darshana / చంద్ర దర్శనం'],
     '2026-09-13':['Varaha Jayanti / వరాహ జయంతి'],
-    '2026-09-14':['Hartalika Teej / హరితాలిక తీజ్','Ganesh Chaturthi / వినాయక చవితి'],
-    '2026-09-15':['Rishi Panchami / ఋషి పంచమి'],
-    '2026-09-16':['Balarama Jayanti / బలరామ జయంతి'],
-    '2026-09-17':['Vishwakarma Puja / విశ్వకర్మ పూజ','Kanya Sankranti / కన్యా సంక్రాంతి'],
-    '2026-09-18':['Ganesh Visarjan / గణేష్ నిమజ్జనం'],
-    '2026-09-19':['Radha Ashtami / రాధాష్టమి'],
-    '2026-09-22':['Parsva Ekadashi / పార్శ్వ ఏకాదashi'],
-    '2026-09-25':['Anant Chaturdashi / అనంత చతుర్దశి'],
-    '2026-09-26':['Bhadrapada Purnima / భాద్రపద పౌర్ణమి'],
-    '2026-09-27':['Pitru Paksha Begins / పితృ పక్షం ప్రారంభం']
+    '2026-09-14':['Hartalika Teej / హరితాలిక తీజ్']
   };
-  function renderFestivalCard(){
-    const isPanchangPage=/(^|\/)panchangam(?:\.html)?\/?$/.test(location.pathname);
-    if(!isPanchangPage||document.getElementById('monthlyFestivalCard'))return;
-    const anchor=appById('dChandrabalam');
-    const anchorItem=anchor?.closest('.detail-item');
-    if(!anchorItem)return;
-    const now=new Date(),year=now.getFullYear(),month=now.getMonth();
-    const entries=Object.entries(festivals).filter(([iso])=>{const date=new Date(iso+'T12:00:00');return date.getFullYear()===year&&date.getMonth()===month});
-    const card=document.createElement('div');card.id='monthlyFestivalCard';card.className='detail-item wide';
-    card.innerHTML='<small>Indian Festivals / భారతీయ పండుగలు</small><strong>'+now.toLocaleDateString('en-IN',{month:'long',year:'numeric'})+'</strong><div class="festival-list">'+entries.map(([iso,names])=>{const date=new Date(iso+'T12:00:00');return '<div class="festival-row"><span class="festival-date">'+date.toLocaleDateString('en-IN',{day:'2-digit',weekday:'short'})+'</span><span class="festival-name">'+names.join('<br>')+'</span></div>'}).join('')+'</div>';
-    const style=document.createElement('style');style.textContent='#monthlyFestivalCard .festival-list{display:grid;gap:8px;margin-top:10px}#monthlyFestivalCard .festival-row{display:grid;grid-template-columns:74px minmax(0,1fr);gap:8px;padding:8px 0;border-top:1px solid var(--line)}#monthlyFestivalCard .festival-date{font-weight:800;color:var(--gold)}#monthlyFestivalCard .festival-name{font-size:13px;line-height:1.5;overflow-wrap:anywhere}';document.head.appendChild(style);
-    anchorItem.insertAdjacentElement('afterend',card);
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',renderFestivalCard,{once:true});else renderFestivalCard();
+  window.SIDDHA_FESTIVALS=festivals;
 })();
