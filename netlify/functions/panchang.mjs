@@ -26,8 +26,7 @@ const rashiValue = source => first(
   source.moonSign, source.moon_sign, source.moonSignName, source.moon_sign_name,
   source.chandraRashi, source.chandra_rashi, source.chandraRashiName, source.chandra_rashi_name,
   source.moon?.rashi, source.moon?.rasi, source.moon?.name, source.moon?.sign,
-  source.chandra?.rashi, source.chandra?.rasi, source.chandra?.name, source.chandra?.sign,
-  source.lagna?.rashi
+  source.chandra?.rashi, source.chandra?.rasi, source.chandra?.name, source.chandra?.sign
 );
 const minutes = value => { const m = String(value || '').match(/(\d{1,2}):(\d{2})/); return m ? Number(m[1])*60+Number(m[2]) : null; };
 const clock = value => { const n=((Math.round(value)%1440)+1440)%1440; return `${String(Math.floor(n/60)).padStart(2,'0')}:${String(n%60).padStart(2,'0')}`; };
@@ -35,7 +34,6 @@ const range = (a,b) => `${clock(a)} – ${clock(b)}`;
 
 function normalize(raw, date) {
   const source = rootOf(raw);
-  const sun = source.sun || source.sunTimes || {};
   const muh = source.muhurta || source.muhurtham || source.timings || {};
   const get = (...keys) => text(first(...keys.map(k => source[k]), ...keys.map(k => muh[k])));
   const sunrise = get('sunrise','sunRise','sunriseTime') || '06:00';
@@ -46,7 +44,7 @@ function normalize(raw, date) {
   const day = new Date(`${date}T12:00:00Z`).getUTCDay();
   const fixed = date === '2026-09-15' ? { paksha:'Shukla Paksha', masa:'Bhadrapada', samvatsara:'Parabhava', rashi:'Tula' } : {};
   const providerRashi = text(rashiValue(source));
-  const usableRashi = providerRashi && !/^unavailable$/i.test(providerRashi.trim()) ? providerRashi : null;
+  const usableRashi = providerRashi && !/^(unavailable|unknown|not available)$/i.test(providerRashi.trim()) ? providerRashi : null;
   return {
     ...raw, ...source, date,
     vara: get('vara','weekday') || ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][day],
