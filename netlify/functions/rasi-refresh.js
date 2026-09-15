@@ -43,6 +43,7 @@ export default async (req) => {
       const data = await response.json();
       const parsed = JSON.parse(textFromResponse(data));
       const generated = Array.isArray(parsed.rashis) ? parsed.rashis : [];
+      if (generated.length !== RASHIS.length) throw new Error('Rasi response did not contain exactly 12 signs');
       payload = {
         status: 'ai', generatedFor: date,
         rashis: RASHIS.map((r, i) => ({ id:r[0], sanskrit:r[1], english:r[2], telugu:r[3], symbol:r[4], ...(generated.find(x => x.id === r[0]) || generated[i] || {}) }))
