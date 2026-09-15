@@ -20,3 +20,37 @@ window.enableSiddhaNotifications=async()=>false;
 (function(){function addShareButton(){const locationBtn=appById('locationBtn');if(!locationBtn||appById('sharePanchangBtn'))return;const btn=document.createElement('button');btn.id='sharePanchangBtn';btn.type='button';btn.className='location-pill';btn.textContent='↗ Share Panchangam';btn.style.marginLeft='8px';btn.style.cursor='pointer';btn.onclick=async()=>{const date=appById('panchDate')?.textContent||'Today';const tithi=appById('todayTithi')?.textContent||'—';const nakshatra=appById('todayNakshatra')?.textContent||'—';const text=`Siddha Astro Panchangam\n${date}\nLocation: Hyderabad\nTithi: ${tithi}\nNakshatra: ${nakshatra}\n${location.href}`;try{if(navigator.share){await navigator.share({title:'Siddha Astro Panchangam',text,url:location.href})}else{await navigator.clipboard.writeText(text);toast('Panchangam details copied. You can share them now.')}}catch(e){if(e.name!=='AbortError')toast('Sharing was cancelled or unavailable.')}};locationBtn.parentElement.appendChild(btn)}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',addShareButton,{once:true});else addShareButton()})();
 (function(){function fallbackCopy(text){const area=document.createElement('textarea');area.value=text;area.setAttribute('readonly','');area.style.position='fixed';area.style.opacity='0';document.body.appendChild(area);area.select();let ok=false;try{ok=document.execCommand('copy')}catch(e){}area.remove();return ok}function enhanceShare(){const btn=appById('sharePanchangBtn');if(!btn)return;btn.onclick=async()=>{const date=appById('panchDate')?.textContent||'Today';const tithi=appById('todayTithi')?.textContent||'—';const nakshatra=appById('todayNakshatra')?.textContent||'—';const text=`Siddha Astro Panchangam\n${date}\nLocation: Hyderabad\nTithi: ${tithi}\nNakshatra: ${nakshatra}\n${location.href}`;try{if(typeof navigator.share==='function'){await navigator.share({title:'Siddha Astro Panchangam',text,url:location.href});return}if(navigator.clipboard&&typeof navigator.clipboard.writeText==='function'){await navigator.clipboard.writeText(text);toast('Panchangam copied. Share it on WhatsApp or any app.');return}if(fallbackCopy(text)){toast('Panchangam copied. Share it on WhatsApp or any app.');return}window.prompt('Copy Panchangam details:',text)}catch(e){if(e&&e.name!=='AbortError')toast('Unable to share. Please try again.')}}}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',enhanceShare,{once:true});else enhanceShare()})();
 (function(){function removeHomeSections(){if(!location.pathname.endsWith('/')&&!location.pathname.endsWith('/index.html'))return;document.querySelectorAll('section').forEach(section=>{const text=(section.textContent||'').trim();const heading=section.querySelector('h2');if(heading&&heading.textContent.trim()==='Daily spiritual reading')section.remove();if(section.classList.contains('hero-card')&&text.includes('DAILY PANCHANGAM'))section.remove()})}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',removeHomeSections,{once:true});else removeHomeSections()})();
+(function(){
+  const festivals={
+    '2026-09-04':['Sri Krishna Janmashtami / శ్రీ కృష్ణ జన్మాష్టమి'],
+    '2026-09-07':['Aja Ekadashi / అజ ఏకాదశి'],
+    '2026-09-09':['Pradosh Vrat / ప్రదోష వ్రతం'],
+    '2026-09-10':['Masik Shivratri / మాస శివరాత్రి'],
+    '2026-09-14':['Hartalika Teej / హరితాలిక తీజ్','Ganesh Chaturthi / వినాయక చవితి'],
+    '2026-09-15':['Rishi Panchami / ఋషి పంచమి'],
+    '2026-09-17':['Vishwakarma Puja / విశ్వకర్మ పూజ','Kanya Sankranti / కన్యా సంక్రాంతి'],
+    '2026-09-19':['Radha Ashtami / రాధాష్టమి'],
+    '2026-09-22':['Parsva Ekadashi / పర్ష్వ ఏకాదశి'],
+    '2026-09-25':['Anant Chaturdashi / అనంత చతుర్దశి','Ganesh Visarjan / గణేష్ నిమజ్జనం'],
+    '2026-09-26':['Bhadrapada Purnima / భాద్రపద పౌర్ణమి'],
+    '2026-09-27':['Pitru Paksha Begins / పితృ పక్షం ప్రారంభం']
+  };
+  function renderFestivalCard(){
+    if(!location.pathname.endsWith('panchangam.html')||document.getElementById('monthlyFestivalCard'))return;
+    const anchor=appById('dChandrabalam');
+    const anchorItem=anchor?.closest('.detail-item');
+    if(!anchorItem)return;
+    const now=new Date();
+    const year=now.getFullYear(),month=now.getMonth();
+    const entries=Object.entries(festivals).filter(([iso])=>{const date=new Date(iso+'T12:00:00');return date.getFullYear()===year&&date.getMonth()===month});
+    const card=document.createElement('div');
+    card.id='monthlyFestivalCard';
+    card.className='detail-item wide';
+    card.innerHTML='<small>Indian Festivals / భారతీయ పండుగలు</small><strong>'+now.toLocaleDateString('en-IN',{month:'long',year:'numeric'})+'</strong><div class="festival-list">'+(entries.length?entries.map(([iso,names])=>{const date=new Date(iso+'T12:00:00');return '<div class="festival-row"><span class="festival-date">'+date.toLocaleDateString('en-IN',{day:'2-digit',weekday:'short'})+'</span><span class="festival-name">'+names.join('<br>')+'</span></div>'}).join(''):'<p class="muted">No festival data available for this month.</p>')+'</div>';
+    const style=document.createElement('style');
+    style.textContent='#monthlyFestivalCard .festival-list{display:grid;gap:8px;margin-top:10px}#monthlyFestivalCard .festival-row{display:grid;grid-template-columns:74px minmax(0,1fr);gap:8px;padding:8px 0;border-top:1px solid var(--line)}#monthlyFestivalCard .festival-date{font-weight:800;color:var(--gold)}#monthlyFestivalCard .festival-name{font-size:13px;line-height:1.5;overflow-wrap:anywhere}';
+    document.head.appendChild(style);
+    anchorItem.insertAdjacentElement('afterend',card);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',renderFestivalCard,{once:true});else renderFestivalCard();
+})();
