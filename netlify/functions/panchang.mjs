@@ -13,13 +13,22 @@ const text = value => {
   if (value === null || value === undefined || value === '') return null;
   if (Array.isArray(value)) return value.map(text).filter(Boolean).join(', ');
   if (typeof value !== 'object') return String(value);
-  const name = first(value.name, value.title, value.label, value.english, value.display, value.value, value.text);
+  const name = first(value.name, value.title, value.label, value.english, value.display, value.value, value.text, value.rashi_name, value.moon_rashi_name, value.moonSign, value.moon_sign, value.chandraRashi, value.chandra_rashi);
   const start = first(value.startLocal, value.startAt, value.startsAt, value.start, value.from);
   const end = first(value.endLocal, value.endAt, value.endsAt, value.end, value.to);
   return first(name && start && end ? `${name}: ${start} – ${end}` : name && start ? `${name}: ${start}` : name && end ? `${name}: ${end}` : name, start && end ? `${start} – ${end}` : start || end);
 };
 const previousDate = date => { const d = new Date(`${date}T12:00:00Z`); d.setUTCDate(d.getUTCDate()-1); return d.toISOString().slice(0,10); };
 const rootOf = raw => { const root = raw?.data || raw?.panchangam || raw?.result || raw || {}; return root.astronomical || root.panchang || root; };
+const rashiValue = source => first(
+  source.rashi, source.rasi, source.rashiName, source.rasiName,
+  source.moonRashi, source.moon_rashi, source.moonRashiName, source.moon_rashi_name,
+  source.moonSign, source.moon_sign, source.moonSignName, source.moon_sign_name,
+  source.chandraRashi, source.chandra_rashi, source.chandraRashiName, source.chandra_rashi_name,
+  source.moon?.rashi, source.moon?.rasi, source.moon?.name, source.moon?.sign,
+  source.chandra?.rashi, source.chandra?.rasi, source.chandra?.name, source.chandra?.sign,
+  source.lagna?.rashi
+);
 const minutes = value => { const m = String(value || '').match(/(\d{1,2}):(\d{2})/); return m ? Number(m[1])*60+Number(m[2]) : null; };
 const clock = value => { const n=((Math.round(value)%1440)+1440)%1440; return `${String(Math.floor(n/60)).padStart(2,'0')}:${String(n%60).padStart(2,'0')}`; };
 const range = (a,b) => `${clock(a)} – ${clock(b)}`;
@@ -44,7 +53,7 @@ function normalize(raw, date) {
     samvatsara: get('samvatsara','samvat','samvatsaraName') || fixed.samvatsara || 'Parabhava',
     tithi: first(source.tithi, { name:get('tithi','tithiName') || 'Unavailable' }),
     nakshatra: first(source.nakshatra, { name:get('nakshatra','nakshatraName') || 'Unavailable' }),
-    rashi: get('rashi','rasi','moonRashi','moon_rashi','rashiName') || fixed.rashi || 'Tula',
+    rashi: text(rashiValue(source)) || fixed.rashi || 'Tula',
     yoga: first(source.yoga, { name:get('yoga','yogaName') || 'Unavailable' }),
     karana: first(source.karana, { name:get('karana','karanaName') || 'Unavailable' }),
     sunrise, sunset,
