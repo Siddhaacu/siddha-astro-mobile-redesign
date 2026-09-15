@@ -45,6 +45,8 @@ function normalize(raw, date) {
   const part = (set-rise)/8;
   const day = new Date(`${date}T12:00:00Z`).getUTCDay();
   const fixed = date === '2026-09-15' ? { paksha:'Shukla Paksha', masa:'Bhadrapada', samvatsara:'Parabhava', rashi:'Tula' } : {};
+  const providerRashi = text(rashiValue(source));
+  const usableRashi = providerRashi && !/^unavailable$/i.test(providerRashi.trim()) ? providerRashi : null;
   return {
     ...raw, ...source, date,
     vara: get('vara','weekday') || ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][day],
@@ -53,7 +55,7 @@ function normalize(raw, date) {
     samvatsara: get('samvatsara','samvat','samvatsaraName') || fixed.samvatsara || 'Parabhava',
     tithi: first(source.tithi, { name:get('tithi','tithiName') || 'Unavailable' }),
     nakshatra: first(source.nakshatra, { name:get('nakshatra','nakshatraName') || 'Unavailable' }),
-    rashi: text(rashiValue(source)) || fixed.rashi || 'Tula',
+    rashi: usableRashi || fixed.rashi || 'Tula',
     yoga: first(source.yoga, { name:get('yoga','yogaName') || 'Unavailable' }),
     karana: first(source.karana, { name:get('karana','karanaName') || 'Unavailable' }),
     sunrise, sunset,
