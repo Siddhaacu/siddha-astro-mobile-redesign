@@ -20,7 +20,9 @@
     const title=now.toLocaleDateString('en-IN',{month:'long',year:'numeric'});
     const rows=[];Object.keys(festivals).forEach(key=>{const d=new Date(key+'T12:00:00');if(d.getFullYear()===year&&d.getMonth()===month)rows.push('<div class="quick-card"><strong>'+d.toLocaleDateString('en-IN',{day:'2-digit',weekday:'short'})+'</strong><small>'+festivals[key].join('<br>')+'</small></div>')});
     section.innerHTML='<div class="section-head"><h2>Indian Festival Calendar / భారతీయ పండుగల క్యాలెండర్</h2><span class="muted">'+title+'</span></div><div class="quick-grid">'+(rows.join('')||'<p class="muted">No festival data available for this month.</p>')+'</div>';
-    const target=document.querySelector('.welcome');if(target)target.insertAdjacentElement('afterend',section);
+    const target=document.querySelector('.detail-card');
+    if(target) target.insertAdjacentElement('afterend',section);
+    else { const welcome=document.querySelector('.welcome'); if(welcome)welcome.insertAdjacentElement('afterend',section); }
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',render,{once:true});else render();
 })();
