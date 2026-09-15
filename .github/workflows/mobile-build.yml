@@ -30,10 +30,11 @@ jobs:
         run: npx cap add android
       - name: Sync Capacitor
         run: npx cap sync android
-      - name: Set Android SDK 36
+      - name: Setup Android SDK
         uses: android-actions/setup-android@v3
-      - name: Install Android 36 SDK
-        run: sdkmanager "platforms;android-36" "build-tools;36.0.0"
+        with:
+          packages: 'platform-tools platforms;android-35 build-tools;35.0.0'
+          accept-android-sdk-licenses: true
       - name: Build Android release bundle
         working-directory: android
         run: ./gradlew bundleRelease
