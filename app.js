@@ -11,7 +11,24 @@ const title=appById('todayTitle');if(title){const h=d.getHours();title.textConte
 const TELUGU={Pratipada:'పాడ్యమి',Dwitiya:'విదియ',Tritiya:'తదియ',Chaturthi:'చవితి',Panchami:'పంచమి',Shashthi:'షష్టి',Saptami:'సప్తమి',Ashtami:'అష్టమి',Navami:'నవమి',Dashami:'దశమి',Ekadashi:'ఏకాదశి',Dwadashi:'ద్వాదశి',Trayodashi:'త్రయోదశి',Chaturdashi:'చతుర్దశి',Purnima:'పౌర్ణమి',Amavasya:'అమావాస్య',Ashwini:'అశ్విని',Bharani:'భరణి',Krittika:'కృత్తిక',Rohini:'రోహిణి',Mrigashira:'మృగశిర',Ardra:'ఆర్ద్ర',Punarvasu:'పునర్వసు',Pushya:'పుష్యమి',Ashlesha:'ఆశ్లేష',Magha:'మఘ','Purva Phalguni':'పుబ్బ','Uttara Phalguni':'ఉత్తర ఫల్గుణి',Hasta:'హస్త',Chitra:'చిత్త',Swati:'స్వాతి',Vishakha:'విశాఖ',Anuradha:'అనూరాధ',Jyeshtha:'జ్యేష్ఠ',Mula:'మూల','Purva Ashadha':'పూర్వాషాఢ','Uttara Ashadha':'ఉత్తరాషాఢ',Shravana:'శ్రవణం',Dhanishta:'ధనిష్ఠ',Shatabhisha:'శతభిషం','Purva Bhadrapada':'పూర్వాభాద్ర','Uttara Bhadrapada':'ఉత్తరాభాద్ర',Revati:'రేవతి',Mesha:'మేషం',Vrishabha:'వృషభం',Mithuna:'మిథునం',Karkataka:'కర్కాటకం',Simha:'సింహం',Kanya:'కన్య',Tula:'తుల',Vrishchika:'వృశ్చికం',Dhanus:'ధనుస్సు',Makara:'మకరం',Kumbha:'కుంభం',Meena:'మీనం'};
 const isUnavailable=v=>/^(unavailable|data unavailable|not available|unknown|—)$/i.test(String(v||'').trim());
 function bi(v){const raw=String(v||'—').trim();if(!raw||raw==='—'||raw.includes('/')||isUnavailable(raw))return raw||'—';return TELUGU[raw]?raw+' / '+TELUGU[raw]:raw}
-function applyNames(){[['todayTithi',false],['todayNakshatra',false],['todayRashi',false]].forEach(([id])=>{const el=appById(id);if(!el)return;const raw=el.dataset.originalValue||el.textContent.trim();if(raw==='Calculating…'||raw==='Calculating...')return;if(!el.dataset.originalValue)el.dataset.originalValue=raw;el.textContent=bi(raw)})}
+const RASHI_BY_NAKSHATRA={Ashwini:'Mesha',Bharani:'Mesha',Krittika:'Mesha',Rohini:'Vrishabha',Mrigashira:'Mithuna',Ardra:'Mithuna',Punarvasu:'Mithuna',Pushya:'Karkataka',Ashlesha:'Karkataka',Magha:'Simha','Purva Phalguni':'Simha','Uttara Phalguni':'Kanya',Hasta:'Kanya',Chitra:'Tula',Swati:'Tula',Vishakha:'Tula',Anuradha:'Vrishchika',Jyeshtha:'Vrishchika',Mula:'Dhanus','Purva Ashadha':'Dhanus','Uttara Ashadha':'Dhanus',Shravana:'Makara',Dhanishta:'Makara',Shatabhisha:'Kumbha','Purva Bhadrapada':'Kumbha','Uttara Bhadrapada':'Meena',Revati:'Meena'};
+function applyNames(){
+  [['todayTithi',false],['todayNakshatra',false]].forEach(([id])=>{const el=appById(id);if(!el)return;const raw=el.dataset.originalValue||el.textContent.trim();if(raw==='Calculating…'||raw==='Calculating...')return;if(!el.dataset.originalValue)el.dataset.originalValue=raw;el.textContent=bi(raw)});
+  const rashi=appById('todayRashi');
+  if(rashi){
+    const raw=rashi.dataset.originalValue||rashi.textContent.trim();
+    if(raw!=='Calculating…'&&raw!=='Calculating...'){
+      if(!rashi.dataset.originalValue)rashi.dataset.originalValue=raw;
+      if(isUnavailable(raw)){
+        const nakshatra=appById('todayNakshatra');
+        const nakshatraRaw=nakshatra?.dataset.originalValue||nakshatra?.textContent.trim()||'';
+        const fallback=RASHI_BY_NAKSHATRA[nakshatraRaw.replace(/\s*\/.*$/,'').trim()];
+        if(fallback){rashi.textContent=fallback;return}
+      }
+      rashi.textContent=raw;
+    }
+  }
+}
 function emergencyFallback(){const values={todayTithi:'Data unavailable / సమాచారం లభ్యం కాదు',todayNakshatra:'Data unavailable / సమాచారం లభ్యం కాదు',todayRashi:'Data unavailable / సమాచారం లభ్యం కాదు',todayYogaKarana:'Data unavailable / సమాచారం లభ్యం కాదు'};Object.keys(values).forEach(id=>{const el=appById(id);if(el&&/^Calculating/.test(el.textContent.trim()))el.textContent=values[id]});const times=['tithiTimes','sunTimes','rahuTimes','gulikaTimes','amruthaTimes','muhurtaTimes','todayTarabala','todayChandrabala'];times.forEach(id=>{const el=appById(id);if(el&&/^Calculating/.test(el.textContent.trim()))el.textContent='Data unavailable / సమాచారం లభ్యం కాదు'});['horaMorning','horaEvening'].forEach(id=>{const el=appById(id);if(el&&/^Calculating/.test(el.textContent.trim()))el.textContent='Data unavailable / సమాచారం లభ్యం కాదు'});toast('Live Panchangam data is unavailable. Please retry.');}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',applyNames,{once:true});else applyNames();window.addEventListener('load',()=>{applyNames();setTimeout(applyNames,1000);setTimeout(applyNames,2500);setTimeout(emergencyFallback,10000)})
 })();
@@ -38,7 +55,7 @@ window.enableSiddhaNotifications=async()=>false;
     '2026-09-17':['Vishwakarma Puja / విశ్వకర్మ పూజ','Kanya Sankranti / కన్యా సంక్రాంతి'],
     '2026-09-18':['Ganesh Visarjan / గణేష్ నిమజ్జనం'],
     '2026-09-19':['Radha Ashtami / రాధాష్టమి'],
-    '2026-09-22':['Parsva Ekadashi / పార్శ్వ ఏకాదశి'],
+    '2026-09-22':['Parsva Ekadashi / పార్శ్వ ఏకాదashi'],
     '2026-09-25':['Anant Chaturdashi / అనంత చతుర్దశి'],
     '2026-09-26':['Bhadrapada Purnima / భాద్రపద పౌర్ణమి'],
     '2026-09-27':['Pitru Paksha Begins / పితృ పక్షం ప్రారంభం']
