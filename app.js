@@ -11,17 +11,7 @@ const title=appById('todayTitle');if(title){const h=d.getHours();title.textConte
 const TELUGU={Pratipada:'పాడ్యమి',Dwitiya:'విదియ',Tritiya:'తదియ',Chaturthi:'చవితి',Panchami:'పంచమి',Shashthi:'షష్టి',Saptami:'సప్తమి',Ashtami:'అష్టమి',Navami:'నవమి',Dashami:'దశమి',Ekadashi:'ఏకాదశి',Dwadashi:'ద్వాదశి',Trayodashi:'త్రయోదశి',Chaturdashi:'చతుర్దశి',Purnima:'పౌర్ణమి',Amavasya:'అమావాస్య',Ashwini:'అశ్విని',Bharani:'భరణి',Krittika:'కృత్తిక',Rohini:'రోహిణి',Mrigashira:'మృగశిర',Ardra:'ఆర్ద్ర',Punarvasu:'పునర్వసు',Pushya:'పుష్యమి',Ashlesha:'ఆశ్లేష',Magha:'మఘ','Purva Phalguni':'పుబ్బ','Uttara Phalguni':'ఉత్తర ఫల్గుణి',Hasta:'హస్త',Chitra:'చిత్త',Swati:'స్వాతి',Vishakha:'విశాఖ',Anuradha:'అనూరాధ',Jyeshtha:'జ్యేష్ఠ',Mula:'మూల','Purva Ashadha':'పూర్వాషాఢ','Uttara Ashadha':'ఉత్తరాషాఢ',Shravana:'శ్రవణం',Dhanishta:'ధనిష్ఠ',Shatabhisha:'శతభిషం','Purva Bhadrapada':'పూర్వాభాద్ర','Uttara Bhadrapada':'ఉత్తరాభాద్ర',Revati:'రేవతి',Mesha:'మేషం',Vrishabha:'వృషభం',Mithuna:'మిథునం',Karkataka:'కర్కాటకం',Simha:'సింహం',Kanya:'కన్య',Tula:'తుల',Vrishchika:'వృశ్చికం',Dhanus:'ధనుస్సు',Makara:'మకరం',Kumbha:'కుంభం',Meena:'మీనం'};
 const isUnavailable=v=>/^(unavailable|data unavailable|not available|unknown|—)$/i.test(String(v||'').trim());
 function bi(v){const raw=String(v||'—').trim();if(!raw||raw==='—'||raw.includes('/')||isUnavailable(raw))return raw||'—';return TELUGU[raw]?raw+' / '+TELUGU[raw]:raw}
-function applyNames(){
-  [['todayTithi',false],['todayNakshatra',false]].forEach(([id])=>{const el=appById(id);if(!el)return;const raw=el.dataset.originalValue||el.textContent.trim();if(raw==='Calculating…'||raw==='Calculating...')return;if(!el.dataset.originalValue)el.dataset.originalValue=raw;el.textContent=bi(raw)});
-  const rashi=appById('todayRashi');
-  if(rashi){
-    const raw=rashi.dataset.originalValue||rashi.textContent.trim();
-    if(raw!=='Calculating…'&&raw!=='Calculating...'){
-      if(!rashi.dataset.originalValue)rashi.dataset.originalValue=raw;
-      rashi.textContent=raw;
-    }
-  }
-}
+function applyNames(){[['todayTithi',false],['todayNakshatra',false]].forEach(([id])=>{const el=appById(id);if(!el)return;const raw=el.dataset.originalValue||el.textContent.trim();if(raw==='Calculating…'||raw==='Calculating...')return;if(!el.dataset.originalValue)el.dataset.originalValue=raw;el.textContent=bi(raw)});const rashi=appById('todayRashi');if(rashi){const raw=rashi.dataset.originalValue||rashi.textContent.trim();if(raw!=='Calculating…'&&raw!=='Calculating...'){if(!rashi.dataset.originalValue)rashi.dataset.originalValue=raw;rashi.textContent=raw;}}}
 function emergencyFallback(){const values={todayTithi:'Data unavailable / సమాచారం లభ్యం కాదు',todayNakshatra:'Data unavailable / సమాచారం లభ్యం కాదు',todayRashi:'Data unavailable / సమాచారం లభ్యం కాదు',todayYogaKarana:'Data unavailable / సమాచారం లభ్యం కాదు'};Object.keys(values).forEach(id=>{const el=appById(id);if(el&&/^Calculating/.test(el.textContent.trim()))el.textContent=values[id]});const times=['tithiTimes','sunTimes','rahuTimes','gulikaTimes','amruthaTimes','muhurtaTimes','todayTarabala','todayChandrabala'];times.forEach(id=>{const el=appById(id);if(el&&/^Calculating/.test(el.textContent.trim()))el.textContent='Data unavailable / సమాచారం లభ్యం కాదు'});['horaMorning','horaEvening'].forEach(id=>{const el=appById(id);if(el&&/^Calculating/.test(el.textContent.trim()))el.textContent='Data unavailable / సమాచారం లభ్యం కాదు'});toast('Live Panchangam data is unavailable. Please retry.');}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',applyNames,{once:true});else applyNames();window.addEventListener('load',()=>{applyNames();setTimeout(applyNames,1000);setTimeout(applyNames,2500);setTimeout(emergencyFallback,10000)})
 })();
@@ -31,18 +21,31 @@ window.enableSiddhaNotifications=async()=>false;
 (function(){function addShareButton(){const locationBtn=appById('locationBtn');if(!locationBtn||appById('sharePanchangBtn'))return;const btn=document.createElement('button');btn.id='sharePanchangBtn';btn.type='button';btn.className='location-pill';btn.textContent='↗ Share Panchangam';btn.style.marginLeft='8px';btn.style.cursor='pointer';btn.onclick=async()=>{const date=appById('panchDate')?.textContent||'Today';const tithi=appById('todayTithi')?.textContent||'—';const nakshatra=appById('todayNakshatra')?.textContent||'—';const text=`Siddha Astro Panchangam\n${date}\nLocation: Hyderabad\nTithi: ${tithi}\nNakshatra: ${nakshatra}\n${location.href}`;try{if(navigator.share){await navigator.share({title:'Siddha Astro Panchangam',text,url:location.href})}else{await navigator.clipboard.writeText(text);toast('Panchangam details copied. You can share them now.')}}catch(e){if(e.name!=='AbortError')toast('Sharing was cancelled or unavailable.')}};locationBtn.parentElement.appendChild(btn)}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',addShareButton,{once:true});else addShareButton()})();
 (function(){function fallbackCopy(text){const area=document.createElement('textarea');area.value=text;area.setAttribute('readonly','');area.style.position='fixed';area.style.opacity='0';document.body.appendChild(area);area.select();let ok=false;try{ok=document.execCommand('copy')}catch(e){}area.remove();return ok}function enhanceShare(){const btn=appById('sharePanchangBtn');if(!btn)return;btn.onclick=async()=>{const date=appById('panchDate')?.textContent||'Today';const tithi=appById('todayTithi')?.textContent||'—';const nakshatra=appById('todayNakshatra')?.textContent||'—';const text=`Siddha Astro Panchangam\n${date}\nLocation: Hyderabad\nTithi: ${tithi}\nNakshatra: ${nakshatra}\n${location.href}`;try{if(typeof navigator.share==='function'){await navigator.share({title:'Siddha Astro Panchangam',text,url:location.href});return}if(navigator.clipboard&&typeof navigator.clipboard.writeText==='function'){await navigator.clipboard.writeText(text);toast('Panchangam copied. Share it on WhatsApp or any app.');return}if(fallbackCopy(text)){toast('Panchangam copied. Share it on WhatsApp or any app.');return}window.prompt('Copy Panchangam details:',text)}catch(e){if(e&&e.name!=='AbortError')toast('Unable to share. Please try again.')}}}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',enhanceShare,{once:true});else enhanceShare()})();
 (function(){function removeHomeSections(){if(!location.pathname.endsWith('/')&&!location.pathname.endsWith('/index.html'))return;document.querySelectorAll('section').forEach(section=>{const text=(section.textContent||'').trim();const heading=section.querySelector('h2');if(heading&&heading.textContent.trim()==='Daily spiritual reading')section.remove();if(section.classList.contains('hero-card')&&text.includes('DAILY PANCHANGAM'))section.remove()})}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',removeHomeSections,{once:true});else removeHomeSections()})();
+(function(){const festivals={'2026-09-02':['Hala Shashthi / హల షష్టి'],'2026-09-04':['Sri Krishna Janmashtami / శ్రీ కృష్ణ జన్మాష్టమి'],'2026-09-05':['Dahi Handi / దహి హండి'],'2026-09-07':['Aja Ekadashi / అజ ఏకాదశి'],'2026-09-08':['Bhauma Pradosh / భౌమ ప్రదోషం'],'2026-09-10':['Pithori Amavasya / పిఠోరి అమావాస్య'],'2026-09-11':['Amavasya / అమావాస్య'],'2026-09-12':['Chandra Darshana / చంద్ర దర్శనం'],'2026-09-13':['Varaha Jayanti / వరాహ జయంతి'],'2026-09-14':['Hartalika Teej / హరితాలిక తీజ్']};window.SIDDHA_FESTIVALS=festivals;})();
+
+/* Home-page sloka rotation: the displayed four cards change at 6:00 AM in the visitor's local time. */
 (function(){
-  const festivals={
-    '2026-09-02':['Hala Shashthi / హల షష్టి'],
-    '2026-09-04':['Sri Krishna Janmashtami / శ్రీ కృష్ణ జన్మాష్టమి'],
-    '2026-09-05':['Dahi Handi / దహి హండి'],
-    '2026-09-07':['Aja Ekadashi / అజ ఏకాదశి'],
-    '2026-09-08':['Bhauma Pradosh / భౌమ ప్రదోషం'],
-    '2026-09-10':['Pithori Amavasya / పిఠోరి అమావాస్య'],
-    '2026-09-11':['Amavasya / అమావాస్య'],
-    '2026-09-12':['Chandra Darshana / చంద్ర దర్శనం'],
-    '2026-09-13':['Varaha Jayanti / వరాహ జయంతి'],
-    '2026-09-14':['Hartalika Teej / హరితాలిక తీజ్']
-  };
-  window.SIDDHA_FESTIVALS=festivals;
+  function getSlokaDay(){
+    const now=new Date();
+    if(now.getHours()<6){now.setDate(now.getDate()-1)}
+    return Math.floor(Date.UTC(now.getFullYear(),now.getMonth(),now.getDate())/86400000);
+  }
+  function rotateSlokas(){
+    const grid=document.getElementById('dailySlokas');
+    if(!grid||!grid.children.length)return;
+    const cards=[...grid.children];
+    const shift=((getSlokaDay()%cards.length)+cards.length)%cards.length;
+    cards.forEach((card,index)=>card.dataset.slokaOrder=index);
+    for(let i=0;i<shift;i++)grid.appendChild(grid.firstElementChild);
+    grid.dataset.slokaDay=String(getSlokaDay());
+  }
+  function scheduleNextSix(){
+    const now=new Date();
+    const next=new Date(now);
+    next.setHours(6,0,0,0);
+    if(next<=now)next.setDate(next.getDate()+1);
+    setTimeout(()=>{rotateSlokas();scheduleNextSix()},Math.max(1000,next-now));
+  }
+  function init(){rotateSlokas();scheduleNextSix()}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
