@@ -28,6 +28,18 @@ const rashiValue = source => first(
   source.moon?.rashi, source.moon?.rasi, source.moon?.name, source.moon?.sign,
   source.chandra?.rashi, source.chandra?.rasi, source.chandra?.name, source.chandra?.sign
 );
+const moonLongitude = source => first(
+  source.moon_longitude, source.moonLongitude, source.moon_longitude_deg,
+  source.moon?.longitude, source.moon?.longitude_deg,
+  source.chandra?.longitude, source.chandra?.longitude_deg
+);
+const RASHIS = ['Mesha','Vrishabha','Mithuna','Karkataka','Simha','Kanya','Tula','Vrishchika','Dhanus','Makara','Kumbha','Meena'];
+const rashiFromLongitude = value => {
+  const longitude = Number(value);
+  if (!Number.isFinite(longitude)) return null;
+  const normalized = ((longitude % 360) + 360) % 360;
+  return RASHIS[Math.min(11, Math.floor(normalized / 30))];
+};
 const minutes = value => { const m = String(value || '').match(/(\d{1,2}):(\d{2})/); return m ? Number(m[1])*60+Number(m[2]) : null; };
 const clock = value => { const n=((Math.round(value)%1440)+1440)%1440; return `${String(Math.floor(n/60)).padStart(2,'0')}:${String(n%60).padStart(2,'0')}`; };
 const range = (a,b) => `${clock(a)} – ${clock(b)}`;
@@ -44,7 +56,8 @@ function normalize(raw, date) {
   const day = new Date(`${date}T12:00:00Z`).getUTCDay();
   const fixed = date === '2026-09-15' ? { paksha:'Shukla Paksha', masa:'Bhadrapada', samvatsara:'Parabhava', rashi:'Tula' } : {};
   const providerRashi = text(rashiValue(source));
-  const usableRashi = providerRashi && !/^(unavailable|unknown|not available)$/i.test(providerRashi.trim()) ? providerRashi : null;
+  const calculatedRashi = rashiFromLongitude(moonLongitude(source));
+  const usableRashi = providerRashi && !/^(unavailable|unknown|not available)$/i.test(providerRashi.trim()) ? providerRashi : calculatedRashi;
   return {
     ...raw, ...source, date,
     vara: get('vara','weekday') || ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][day],
@@ -53,7 +66,7 @@ function normalize(raw, date) {
     samvatsara: get('samvatsara','samvat','samvatsaraName') || fixed.samvatsara || 'Parabhava',
     tithi: first(source.tithi, { name:get('tithi','tithiName') || 'Unavailable' }),
     nakshatra: first(source.nakshatra, { name:get('nakshatra','nakshatraName') || 'Unavailable' }),
-    rashi: usableRashi || fixed.rashi || 'Tula',
+    rashi: usableRashi || fixed.rashi || 'Unavailable',
     yoga: first(source.yoga, { name:get('yoga','yogaName') || 'Unavailable' }),
     karana: first(source.karana, { name:get('karana','karanaName') || 'Unavailable' }),
     sunrise, sunset,
